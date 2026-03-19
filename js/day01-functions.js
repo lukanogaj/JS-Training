@@ -63,51 +63,144 @@
 // Even Number form array
 /////////////////////////////
 
-const getEvenNumbers = (numbers) => {
-	return numbers.filter((number) => number % 2 === 0);
+// const getEvenNumbers = (numbers) => {
+// 	return numbers.filter((number) => number % 2 === 0);
+// };
+// console.log(getEvenNumbers([1, 2, 3, 4]));
+// //Shorter
+// const getEvenNumbers1 = (numbers) =>
+// 	numbers.filter((number) => number % 2 === 0);
+
+// // Get Adults
+
+// const getAdults = (ages) => ages.filter((age) => age >= 18);
+
+// console.log(getAdults([12, 18, 25]));
+
+// /// SUm arrays
+
+// const sumArray = (numbers) => numbers.reduce((acc, num) => acc + num, 0);
+// // initial value starting value
+
+// console.log(sumArray([1, 2, 3]));
+
+// ///🔥 TASK 1 — getCompletedTodos
+// const todos = [
+// 	{ id: 1, title: "Task 1", completed: false },
+// 	{ id: 2, title: "Task 2", completed: true },
+// ];
+// const getCompletedTodos = (todos) => todos.filter((todo) => todo.completed);
+
+// console.log(getCompletedTodos(todos));
+
+// /// Mark completed
+// const markCompleted = (todos, id) =>
+// 	todos.map((todo) => (todo.id === id ? { ...todo, completed: true } : todo));
+// console.log(markCompleted(todos, 1));
+
+// // use map
+// const names = ["Lukasz", "Anna"];
+
+// const greetNames = (names) => {
+// 	return names.map((name) => `Hello  ${name}`);
+// };
+
+// console.log(greetNames(names));
+
+// //Get todo titles
+// const getTodoTitles = (todos) => todos.map((todo) => todo.title);
+
+// console.log(getTodoTitles(todos));
+/*
+
+🔹 BLOCK 1 — TODAY TASKS (JS)
+🧠 PART 1 — STRING METHODS
+🔥 Task 1 — containsWord
+
+Check if text contains a word
+
+containsWord("Hello Lukasz", "Lukasz") // true
+containsWord("Hello world", "lukasz") // false
+🔥 Task 2 — normalize
+
+Clean text for search
+
+👉 remove spaces + lowercase
+
+normalize("  Lukasz ") // "lukasz"
+normalize("  HELLO ")  // "hello"
+🔥 Task 3 — truncate
+
+Short preview (UI logic)
+
+truncate("Hello world", 5) // "Hello..."
+truncate("Hi", 5) // "Hi"
+🧠 PART 2 — DATE BASICS
+
+👉 Use new Date()
+
+🔥 Task 4 — isToday
+isToday("2026-03-19") // true (if today is 19 March 2026)
+isToday("2026-03-10") // false
+🔥 Task 5 — isOverdue
+
+👉 earlier than today
+
+isOverdue("2026-03-10") // true
+isOverdue("2026-03-25") // false
+🔥 Task 6 — formatDate
+
+👉 simple UI format
+
+formatDate("2026-03-19") // "19 Mar"
+formatDate("2026-12-01") // "1 Dec"
+
+
+
+*/
+
+const helloLukasz = "Hello Lukasz";
+// const helloLuk = helloLukasz.toLocaleLowerCase();
+const helloWorld = "Hello world";
+// const helloWor = helloWorld.toLocaleLowerCase();
+
+// console.log(helloLuk, helloWor);
+
+const containWord = (text, word) => {
+	return text.includes(word);
 };
-console.log(getEvenNumbers([1, 2, 3, 4]));
-//Shorter
-const getEvenNumbers1 = (numbers) =>
-	numbers.filter((number) => number % 2 === 0);
 
-// Get Adults
+console.log(containWord("Hello Lukasz", "Lukasz"));
 
-const getAdults = (ages) => ages.filter((age) => age >= 18);
+/////////////
+// Normalize
 
-console.log(getAdults([12, 18, 25]));
+const word1 = "  Lukasz  ";
+const word2 = " Hello ";
 
-/// SUm arrays
-
-const sumArray = (numbers) => numbers.reduce((acc, num) => acc + num, 0);
-// initial value starting value
-
-console.log(sumArray([1, 2, 3]));
-
-///🔥 TASK 1 — getCompletedTodos
-const todos = [
-	{ id: 1, title: "Task 1", completed: false },
-	{ id: 2, title: "Task 2", completed: true },
-];
-const getCompletedTodos = (todos) => todos.filter((todo) => todo.completed);
-
-console.log(getCompletedTodos(todos));
-
-/// Mark completed
-const markCompleted = (todos, id) =>
-	todos.map((todo) => (todo.id === id ? { ...todo, completed: true } : todo));
-console.log(markCompleted(todos, 1));
-
-// use map
-const names = ["Lukasz", "Anna"];
-
-const greetNames = (names) => {
-	return names.map((name) => "Hello " + name);
+const removeSpace = (word) => {
+	return word.trim().toLowerCase();
 };
 
-console.log(greetNames(names));
+console.log(removeSpace(word1));
 
-//Get todo titles
-const getTodoTitles = (todos) => todos.map((todo) => todo.title);
+// Truncate text , make shorter , cut the text if is longer than. need it
+const truncate = (text, limit) => {
+	return text.length > limit ? text.slice(0, limit) + "..." : text;
+};
 
-console.log(getTodoTitles(todos));
+console.log(truncate("Hello lukasz", 5));
+
+// COmpare the dates
+const isToday = (dateString) => {
+	const inputDate = new Date(dateString);
+	const today = new Date();
+
+	return (
+		inputDate.getFullYear() === today.getFullYear() &&
+		inputDate.getMonth() === today.getMonth() &&
+		inputDate.getDate() === today.getDate()
+	);
+};
+
+console.log(isToday("2026-03-19"));
