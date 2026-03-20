@@ -1,21 +1,21 @@
 // // Checking odds number
-// const isEven = (number) => {
-// 	if (number % 2 === 0) {
-// 		return true;
-// 	} else {
-// 		return false;
-// 	}
-// };
+const isEven = (number) => {
+	if (number % 2 === 0) {
+		return true;
+	} else {
+		return false;
+	}
+};
 
 // /// Shorter
-// const isEven1 = (number) => {
-// 	return number % 2 === 0;
-// };
+const isEven1 = (number) => {
+	return number % 2 === 0;
+};
 
 // //Mid level
-// const isEven2 = (number) => number % 2 === 0;
+const isEven2 = (number) => number % 2 === 0;
 
-// console.log(isEven(2), isEven1(7), isEven2(10));
+console.log(isEven(2), isEven1(7), isEven2(10));
 
 // // Function to sum numbers
 // const sum = (a, b) => a + b;
@@ -193,9 +193,9 @@ console.log(truncate("Hello lukasz", 5));
 
 // COmpare the dates
 const isToday = (dateString) => {
+	//Date to check
 	const inputDate = new Date(dateString);
 	const today = new Date();
-
 	return (
 		inputDate.getFullYear() === today.getFullYear() &&
 		inputDate.getMonth() === today.getMonth() &&
@@ -203,4 +203,131 @@ const isToday = (dateString) => {
 	);
 };
 
-console.log(isToday("2026-03-19"));
+// console.log(isToday("2026-03-19"));
+
+/// Is Overdue
+const isOverdue = (dateString) => {
+	const inputDate = new Date(dateString);
+	const today = new Date();
+
+	inputDate.setHours(0, 0, 0, 0);
+	today.setHours(0, 0, 0, 0);
+
+	return inputDate < today;
+};
+
+// Format date
+
+/*
+const formatDate = (dateString) => {
+  // convert to Date
+  // get day
+  // get month index
+  // use month index to get month name from months array
+};
+*/
+const months = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
+];
+const formatDate = (dateString) => {
+	const inputDate = new Date(dateString);
+
+	const day = inputDate.getDate();
+	const monthIndex = inputDate.getMonth();
+
+	return day + " " + months[monthIndex];
+};
+
+console.log(formatDate("2026-03-19")); // "19 Mar"
+
+///////////////////////////////////////////
+/*🔥 NEW BLOCK — COMBINED JS (REAL TASKS)
+
+Now you stop doing isolated functions. */
+
+const todos = [
+	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-10" },
+	{ id: 2, title: "Code", completed: true, dueDate: "2026-03-19" },
+	{ id: 3, title: "Shop", completed: false, dueDate: "2026-03-25" },
+];
+
+// getCompletedTodos
+
+const getCompletedTodos = (todos) => {
+	return todos.filter((todo) => todo.completed);
+};
+
+console.log(getCompletedTodos(todos));
+
+//////////////////////////////////////
+
+/*
+🎯 TASK 2 — getTodoTitles
+
+👉 use .map()
+
+// ["Gym", "Code", "Shop"]
+*/
+
+const getTodoTitles = (todos) => {
+	return todos.map((todo) => todo.title);
+};
+
+console.log(getTodoTitles(todos));
+
+/*
+🎯 TASK 3 — getOverdueTodos
+
+👉 combine:
+
+date logic (isOverdue)
+
+.filter()
+*/
+
+const getOverdueTodos = (todos) => {
+	return todos.filter((todo) => isOverdue(todo.dueDate));
+};
+
+console.log(getOverdueTodos(todos));
+
+/// markCompleted
+const markCompleted = (todos, id) => {
+	return todos.map((todo) =>
+		todo.id === id ? { ...todo, completed: true } : todo,
+	);
+};
+
+console.log(markCompleted(todos, 1));
+
+///////////////
+/*
+block
+
+🔥 TASK 5 — formatTodosForUI
+
+👉 This is real frontend work
+
+You take raw data → transform it → ready for UI
+
+*/
+const formatTodosForUI = (todos) => {
+	return todos.map((todo) => ({
+		id: todo.id,
+		title: truncate(todo.title, 5),
+		due: formatDate(todo.dueDate),
+		completed: todo.completed,
+	}));
+};
+console.log(formatTodosForUI(todos));
