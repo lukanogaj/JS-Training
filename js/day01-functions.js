@@ -258,8 +258,8 @@ Now you stop doing isolated functions. */
 
 const todos = [
 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-10" },
-	{ id: 2, title: "Code", completed: true, dueDate: "2026-03-19" },
-	{ id: 3, title: "Shop", completed: false, dueDate: "2026-03-25" },
+	{ id: 2, title: "Code", completed: true, dueDate: "2026-03-21" },
+	{ id: 3, title: "Shop", completed: false, dueDate: "2026-03-21" },
 ];
 
 // getCompletedTodos
@@ -331,3 +331,37 @@ const formatTodosForUI = (todos) => {
 	}));
 };
 console.log(formatTodosForUI(todos));
+
+// 21.03.2026 Saturday
+// Get DashboardData
+/*
+{
+  total: number,
+  completed: number,
+  active: number,
+  overdue: number,
+  today: number,
+}
+  */
+
+const getVisibleTodos = (todos, filterType) => {
+	if (filterType === "all") {
+		return todos;
+	}
+
+	if (filterType === "active") {
+		return todos.filter((todo) => !todo.completed);
+	}
+
+	if (filterType === "completed") {
+		return todos.filter((todo) => todo.completed);
+	}
+
+	if (filterType === "overdue") {
+		return todos.filter((todo) => isOverdue(todo.dueDate) && !todo.completed);
+	}
+
+	// fallback (wrong filterType)
+	return todos;
+};
+console.log(getVisibleTodos(todos, "abc"));
