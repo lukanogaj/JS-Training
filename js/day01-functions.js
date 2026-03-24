@@ -1,21 +1,21 @@
 // // Checking odds number
-const isEven = (number) => {
-	if (number % 2 === 0) {
-		return true;
-	} else {
-		return false;
-	}
-};
+// const isEven = (number) => {
+// 	if (number % 2 === 0) {
+// 		return true;
+// 	} else {
+// 		return false;
+// 	}
+// };
 
-// /// Shorter
-const isEven1 = (number) => {
-	return number % 2 === 0;
-};
+// // /// Shorter
+// const isEven1 = (number) => {
+// 	return number % 2 === 0;
+// };
 
-// //Mid level
-const isEven2 = (number) => number % 2 === 0;
+// // //Mid level
+// const isEven2 = (number) => number % 2 === 0;
 
-console.log(isEven(2), isEven1(7), isEven2(10));
+// console.log(isEven(2), isEven1(7), isEven2(10));
 
 // // Function to sum numbers
 // const sum = (a, b) => a + b;
@@ -159,53 +159,53 @@ formatDate("2026-12-01") // "1 Dec"
 
 */
 
-const helloLukasz = "Hello Lukasz";
-// const helloLuk = helloLukasz.toLocaleLowerCase();
-const helloWorld = "Hello world";
-// const helloWor = helloWorld.toLocaleLowerCase();
+// const helloLukasz = "Hello Lukasz";
+// // const helloLuk = helloLukasz.toLocaleLowerCase();
+// const helloWorld = "Hello world";
+// // const helloWor = helloWorld.toLocaleLowerCase();
 
-// console.log(helloLuk, helloWor);
+// // console.log(helloLuk, helloWor);
 
-const containWord = (text, word) => {
-	return text.includes(word);
-};
+// const containWord = (text, word) => {
+// 	return text.includes(word);
+// };
 
-console.log(containWord("Hello Lukasz", "Lukasz"));
+// console.log(containWord("Hello Lukasz", "Lukasz"));
 
-/////////////
-// Normalize
+// /////////////
+// // Normalize
 
-const word1 = "  Lukasz  ";
-const word2 = " Hello ";
+// const word1 = "  Lukasz  ";
+// const word2 = " Hello ";
 
-const removeSpace = (word) => {
-	return word.trim().toLowerCase();
-};
+// const removeSpace = (word) => {
+// 	return word.trim().toLowerCase();
+// };
 
-console.log(removeSpace(word1));
+// console.log(removeSpace(word1));
 
-// Truncate text , make shorter , cut the text if is longer than. need it
-const truncate = (text, limit) => {
-	return text.length > limit ? text.slice(0, limit) + "..." : text;
-};
+// // Truncate text , make shorter , cut the text if is longer than. need it
+// const truncate = (text, limit) => {
+// 	return text.length > limit ? text.slice(0, limit) + "..." : text;
+// };
 
-console.log(truncate("Hello lukasz", 5));
+// console.log(truncate("Hello lukasz", 5));
 
-// COmpare the dates
-const isToday = (dateString) => {
-	//Date to check
-	const inputDate = new Date(dateString);
-	const today = new Date();
-	return (
-		inputDate.getFullYear() === today.getFullYear() &&
-		inputDate.getMonth() === today.getMonth() &&
-		inputDate.getDate() === today.getDate()
-	);
-};
+// // COmpare the dates
+// const isToday = (dateString) => {
+// 	//Date to check
+// 	const inputDate = new Date(dateString);
+// 	const today = new Date();
+// 	return (
+// 		inputDate.getFullYear() === today.getFullYear() &&
+// 		inputDate.getMonth() === today.getMonth() &&
+// 		inputDate.getDate() === today.getDate()
+// 	);
+// };
 
-// console.log(isToday("2026-03-19"));
+// // console.log(isToday("2026-03-19"));
 
-/// Is Overdue
+// /// Is Overdue
 const isOverdue = (dateString) => {
 	const inputDate = new Date(dateString);
 	const today = new Date();
@@ -216,53 +216,212 @@ const isOverdue = (dateString) => {
 	return inputDate < today;
 };
 
-// Format date
+// // Format date
 
-/*
-const formatDate = (dateString) => {
-  // convert to Date
-  // get day
-  // get month index
-  // use month index to get month name from months array
-};
-*/
-const months = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
-];
-const formatDate = (dateString) => {
-	const inputDate = new Date(dateString);
+// /*
+// const formatDate = (dateString) => {
+//   // convert to Date
+//   // get day
+//   // get month index
+//   // use month index to get month name from months array
+// };
+// */
+// const months = [
+// 	"Jan",
+// 	"Feb",
+// 	"Mar",
+// 	"Apr",
+// 	"May",
+// 	"Jun",
+// 	"Jul",
+// 	"Aug",
+// 	"Sep",
+// 	"Oct",
+// 	"Nov",
+// 	"Dec",
+// ];
+// const formatDate = (dateString) => {
+// 	const inputDate = new Date(dateString);
 
-	const day = inputDate.getDate();
-	const monthIndex = inputDate.getMonth();
+// 	const day = inputDate.getDate();
+// 	const monthIndex = inputDate.getMonth();
 
-	return day + " " + months[monthIndex];
-};
+// 	return day + " " + months[monthIndex];
+// };
 
-console.log(formatDate("2026-03-19")); // "19 Mar"
+// console.log(formatDate("2026-03-19")); // "19 Mar"
 
-///////////////////////////////////////////
-/*🔥 NEW BLOCK — COMBINED JS (REAL TASKS)
+// ///////////////////////////////////////////
+// /*🔥 NEW BLOCK — COMBINED JS (REAL TASKS)
 
-Now you stop doing isolated functions. */
+// Now you stop doing isolated functions. */
+
+// const todos = [
+// 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-10" },
+// 	{ id: 2, title: "Code", completed: true, dueDate: "2026-03-21" },
+// 	{ id: 3, title: "Shop", completed: false, dueDate: "2026-03-21" },
+// ];
+
+// // getCompletedTodos
+
+// const getCompletedTodos = (todos) => {
+// 	return todos.filter((todo) => todo.completed);
+// };
+
+// console.log(getCompletedTodos(todos));
+
+// //////////////////////////////////////
+
+// /*
+// 🎯 TASK 2 — getTodoTitles
+
+// 👉 use .map()
+
+// // ["Gym", "Code", "Shop"]
+// */
+
+// const getTodoTitles = (todos) => {
+// 	return todos.map((todo) => todo.title);
+// };
+
+// console.log(getTodoTitles(todos));
+
+// /*
+// 🎯 TASK 3 — getOverdueTodos
+
+// 👉 combine:
+
+// date logic (isOverdue)
+
+// .filter()
+// */
+
+// const getOverdueTodos = (todos) => {
+// 	return todos.filter((todo) => isOverdue(todo.dueDate));
+// };
+
+// console.log(getOverdueTodos(todos));
+
+// /// markCompleted
+// const markCompleted = (todos, id) => {
+// 	return todos.map((todo) =>
+// 		todo.id === id ? { ...todo, completed: true } : todo,
+// 	);
+// };
+
+// console.log(markCompleted(todos, 1));
+
+// ///////////////
+// /*
+// block
+
+// 🔥 TASK 5 — formatTodosForUI
+
+// 👉 This is real frontend work
+
+// You take raw data → transform it → ready for UI
+
+// */
+// const formatTodosForUI = (todos) => {
+// 	return todos.map((todo) => ({
+// 		id: todo.id,
+// 		title: truncate(todo.title, 5),
+// 		due: formatDate(todo.dueDate),
+// 		completed: todo.completed,
+// 	}));
+// };
+// console.log(formatTodosForUI(todos));
+
+// // 21.03.2026 Saturday
+// // Get DashboardData
+// /*
+// {
+//   total: number,
+//   completed: number,
+//   active: number,
+//   overdue: number,
+//   today: number,
+// }
+//   */
+
+// const getVisibleTodos = (todos, filterType) => {
+// 	if (filterType === "all") {
+// 		return todos;
+// 	}
+
+// 	if (filterType === "active") {
+// 		return todos.filter((todo) => !todo.completed);
+// 	}
+
+// 	if (filterType === "completed") {
+// 		return todos.filter((todo) => todo.completed);
+// 	}
+
+// 	if (filterType === "overdue") {
+// 		return todos.filter((todo) => isOverdue(todo.dueDate) && !todo.completed);
+// 	}
+
+// 	// fallback (wrong filterType)
+// 	return todos;
+// };
+// console.log(getVisibleTodos(todos, "abc"));
+
+////////////////////
+//22.03.2026 Sunday. DAY 1
 
 const todos = [
 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-10" },
 	{ id: 2, title: "Code", completed: true, dueDate: "2026-03-21" },
 	{ id: 3, title: "Shop", completed: false, dueDate: "2026-03-21" },
+	{ id: 4, title: "Test", completed: true, dueDate: "2026-03-24" },
 ];
 
-// getCompletedTodos
+////////////////////
+// Find todo by id number
+const findTodosById = (todos, id) => {
+	return todos.find((todo) => todo.id === id);
+};
+
+// console.log(findTodosById(todos, 3));
+
+////////////////////////////
+// Find completed todos
+
+const hasCompletedTodos = (todos) => {
+	return todos.some((todo) => todo.completed);
+};
+
+///////////////////////////
+// FInd if all completed
+
+const areaAllTodosCompleted = (todos) => {
+	return todos.every((todo) => todo.completed);
+};
+
+// /////////////////
+// Show active todos
+
+const getActiveTodosCount = (todos) => {
+	return todos.filter((todo) => !todo.completed).length;
+};
+
+//////////////////////
+/// Put all together
+const getOverdueTodos = (todos) => {
+	return todos.filter((todo) => isOverdue(todo.dueDate)).length;
+};
+
+const getDashboardData = (todos) => {
+	return {
+		total: todos.length,
+		completed: todos.filter((todo) => todo.completed).length,
+		active: getActiveTodosCount(todos),
+		overdue: todos.filter((todo) => isOverdue(todo.dueDate)).length,
+	};
+};
+
+/////////////////////////////
+// 23.03.2026 Day 2
 
 const getCompletedTodos = (todos) => {
 	return todos.filter((todo) => todo.completed);
@@ -270,98 +429,37 @@ const getCompletedTodos = (todos) => {
 
 console.log(getCompletedTodos(todos));
 
-//////////////////////////////////////
-
-/*
-🎯 TASK 2 — getTodoTitles
-
-👉 use .map()
-
-// ["Gym", "Code", "Shop"]
-*/
-
 const getTodoTitles = (todos) => {
 	return todos.map((todo) => todo.title);
 };
 
 console.log(getTodoTitles(todos));
 
-/*
-🎯 TASK 3 — getOverdueTodos
-
-👉 combine:
-
-date logic (isOverdue)
-
-.filter()
-*/
-
-const getOverdueTodos = (todos) => {
-	return todos.filter((todo) => isOverdue(todo.dueDate));
-};
-
-console.log(getOverdueTodos(todos));
-
-/// markCompleted
-const markCompleted = (todos, id) => {
+const toggleTodoCompleted = (todos, id) => {
 	return todos.map((todo) =>
-		todo.id === id ? { ...todo, completed: true } : todo,
+		todo.id === id ? { ...todo, completed: !todo.completed } : todo,
 	);
 };
 
-console.log(markCompleted(todos, 1));
+console.log(toggleTodoCompleted(todos, 3));
 
-///////////////
-/*
-block
-
-🔥 TASK 5 — formatTodosForUI
-
-👉 This is real frontend work
-
-You take raw data → transform it → ready for UI
-
-*/
-const formatTodosForUI = (todos) => {
-	return todos.map((todo) => ({
-		id: todo.id,
-		title: truncate(todo.title, 5),
-		due: formatDate(todo.dueDate),
-		completed: todo.completed,
-	}));
+const deleteTodoById = (todos, id) => {
+	return todos.filter((todo) => todo.id !== id);
 };
-console.log(formatTodosForUI(todos));
 
-// 21.03.2026 Saturday
-// Get DashboardData
-/*
-{
-  total: number,
-  completed: number,
-  active: number,
-  overdue: number,
-  today: number,
-}
-  */
+console.log(deleteTodoById(todos, 2));
 
-const getVisibleTodos = (todos, filterType) => {
-	if (filterType === "all") {
-		return todos;
-	}
-
-	if (filterType === "active") {
-		return todos.filter((todo) => !todo.completed);
-	}
-
-	if (filterType === "completed") {
-		return todos.filter((todo) => todo.completed);
-	}
-
-	if (filterType === "overdue") {
-		return todos.filter((todo) => isOverdue(todo.dueDate) && !todo.completed);
-	}
-
-	// fallback (wrong filterType)
-	return todos;
+const getCompletedTitles = (todos) => {
+	return getCompletedTodos(todos).map((todo) => todo.title);
 };
-console.log(getVisibleTodos(todos, "abc"));
+
+console.log(getCompletedTodos(todos));
+
+const getActiveTitles = (todos) => {
+	return todos.filter((todo) => !todo.completed).map((todo) => todo.title);
+};
+
+console.log(getActiveTitles(todos));
+
+
+
