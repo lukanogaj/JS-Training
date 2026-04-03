@@ -649,3 +649,69 @@ const groupTodos = (todos) => {
 };
 
 console.log(groupTodos(todos));
+
+/// 03.04.2026 Friday
+
+const countActiveTodos = (todos) => {
+	return todos.reduce((acc, todo) => (!todo.completed ? acc + 1 : acc), 0);
+};
+
+console.log(countActiveTodos(todos));
+
+//////////////////
+/////////////////
+const getCompletedTitles = (todos) => {
+	return todos.reduce((acc, todo) => {
+		if (todo.completed) {
+			acc.push(todo.title);
+		}
+		return acc;
+	}, []);
+};
+console.log(getCompletedTitles(todos));
+
+/////////////////////
+///////////////////////
+/////////////////////
+
+const getOverdueTodos = (todos) => {
+	const today = new Date("2026-05-11");
+	today.setHours(0, 0, 0, 0);
+	return todos.filter((todo) => {
+		const todoDate = new Date(todo.dueDate);
+		todoDate.setHours(0, 0, 0, 0);
+
+		return !todo.completed && todoDate < today;
+	});
+};
+
+console.log(getOverdueTodos(todos));
+
+/////////////////
+
+///////////////////
+
+const getTodoStats = (todos) => {
+	const today = new Date("2026-05-17");
+	today.setHours(0, 0, 0, 0);
+	return todos.reduce(
+		(acc, todo) => {
+			const todoDate = new Date(todo.dueDate);
+			acc.total++;
+			if (todo.completed) {
+				acc.completed++;
+			} else {
+				acc.active++;
+			}
+
+			if (!todo.completed && todoDate < today) {
+				acc.overdue++;
+			}
+
+			return acc;
+		},
+		{ total: 0, completed: 0, active: 0, overdue: 0 },
+	);
+};
+
+console.log(getTodoStats(todos));
