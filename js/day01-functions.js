@@ -613,6 +613,111 @@
 
 // 02.04.2026 Thursday
 
+// const todos = [
+// 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-05-10" },
+// 	{ id: 2, title: "Code", completed: true, dueDate: "2026-05-08" },
+// 	{ id: 3, title: "Shop", completed: true, dueDate: "2026-05-12" },
+// 	{ id: 4, title: "Read", completed: false, dueDate: "2026-05-07" },
+// ];
+
+// const countCompletedTodos = (todos) => {
+// 	return todos.reduce((acc, todo) => {
+// 		return todo.completed ? acc + 1 : acc;
+// 	}, 0);
+// };
+
+// const countCompletedTodosShort = (todos) =>
+// 	todos.reduce((acc, todo) => (todo.completed ? acc + 1 : acc), 0);
+
+// // console.log(countCompletedTodos(todos), countCompletedTodosShort(todos));
+
+// ////
+
+// const groupTodos = (todos) => {
+// 	return todos.reduce(
+// 		(acc, todo) => {
+// 			if (todo.completed) {
+// 				acc.completed.push(todo);
+// 			} else {
+// 				acc.active.push(todo);
+// 			}
+
+// 			return acc;
+// 		},
+// 		{ completed: [], active: [] },
+// 	);
+// };
+
+// // console.log(groupTodos(todos));
+
+// /// 03.04.2026 Friday
+
+// const countActiveTodos = (todos) => {
+// 	return todos.reduce((acc, todo) => (!todo.completed ? acc + 1 : acc), 0);
+// };
+
+// // console.log(countActiveTodos(todos));
+
+// //////////////////
+// /////////////////
+// const getCompletedTitles = (todos) => {
+// 	return todos.reduce((acc, todo) => {
+// 		if (todo.completed) {
+// 			acc.push(todo.title);
+// 		}
+// 		return acc;
+// 	}, []);
+// };
+// // console.log(getCompletedTitles(todos));
+
+// /////////////////////
+// ///////////////////////
+// /////////////////////
+
+// const getOverdueTodos = (todos) => {
+// 	const today = new Date("2026-05-11");
+// 	today.setHours(0, 0, 0, 0);
+// 	return todos.filter((todo) => {
+// 		const todoDate = new Date(todo.dueDate);
+// 		todoDate.setHours(0, 0, 0, 0);
+
+// 		return !todo.completed && todoDate < today;
+// 	});
+// };
+
+// // console.log(getOverdueTodos(todos));
+
+// /////////////////
+
+// ///////////////////
+
+// const getTodoStats = (todos) => {
+// 	const today = new Date("2026-05-17");
+// 	today.setHours(0, 0, 0, 0);
+// 	return todos.reduce(
+// 		(acc, todo) => {
+// 			const todoDate = new Date(todo.dueDate);
+// 			acc.total++;
+// 			if (todo.completed) {
+// 				acc.completed++;
+// 			} else {
+// 				acc.active++;
+// 			}
+
+// 			if (!todo.completed && todoDate < today) {
+// 				acc.overdue++;
+// 			}
+
+// 			return acc;
+// 		},
+// 		{ total: 0, completed: 0, active: 0, overdue: 0 },
+// 	);
+// };
+
+// console.log(getTodoStats(todos));
+
+// 04.0-4.2026 Saturday
+
 const todos = [
 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-05-10" },
 	{ id: 2, title: "Code", completed: true, dueDate: "2026-05-08" },
@@ -620,98 +725,77 @@ const todos = [
 	{ id: 4, title: "Read", completed: false, dueDate: "2026-05-07" },
 ];
 
-const countCompletedTodos = (todos) => {
-	return todos.reduce((acc, todo) => {
-		return todo.completed ? acc + 1 : acc;
-	}, 0);
-};
-
-const countCompletedTodosShort = (todos) =>
-	todos.reduce((acc, todo) => (todo.completed ? acc + 1 : acc), 0);
-
-// console.log(countCompletedTodos(todos), countCompletedTodosShort(todos));
-
-////
-
-const groupTodos = (todos) => {
-	return todos.reduce(
-		(acc, todo) => {
-			if (todo.completed) {
-				acc.completed.push(todo);
-			} else {
-				acc.active.push(todo);
-			}
-
-			return acc;
-		},
-		{ completed: [], active: [] },
-	);
-};
-
-console.log(groupTodos(todos));
-
-/// 03.04.2026 Friday
-
-const countActiveTodos = (todos) => {
-	return todos.reduce((acc, todo) => (!todo.completed ? acc + 1 : acc), 0);
-};
-
-console.log(countActiveTodos(todos));
-
-//////////////////
-/////////////////
-const getCompletedTitles = (todos) => {
-	return todos.reduce((acc, todo) => {
-		if (todo.completed) {
-			acc.push(todo.title);
-		}
-		return acc;
-	}, []);
-};
-console.log(getCompletedTitles(todos));
-
-/////////////////////
-///////////////////////
-/////////////////////
-
-const getOverdueTodos = (todos) => {
-	const today = new Date("2026-05-11");
-	today.setHours(0, 0, 0, 0);
-	return todos.filter((todo) => {
-		const todoDate = new Date(todo.dueDate);
-		todoDate.setHours(0, 0, 0, 0);
-
-		return !todo.completed && todoDate < today;
+const markTodoCompleted = (todos, id) => {
+	return todos.map((todo) => {
+		return todo.id === id ? { ...todo, completed: true } : todo;
 	});
 };
 
-console.log(getOverdueTodos(todos));
+// console.log(markTodoCompleted(todos, 2));
 
-/////////////////
-
-///////////////////
-
-const getTodoStats = (todos) => {
-	const today = new Date("2026-05-17");
-	today.setHours(0, 0, 0, 0);
-	return todos.reduce(
-		(acc, todo) => {
-			const todoDate = new Date(todo.dueDate);
-			acc.total++;
-			if (todo.completed) {
-				acc.completed++;
-			} else {
-				acc.active++;
-			}
-
-			if (!todo.completed && todoDate < today) {
-				acc.overdue++;
-			}
-
-			return acc;
-		},
-		{ total: 0, completed: 0, active: 0, overdue: 0 },
-	);
+const toggleTodoCompleted = (todos, id) => {
+	return todos.map((todo) => {
+		return todo.id === id ? { ...todo, completed: !todo.completed } : todo;
+	});
 };
 
-console.log(getTodoStats(todos));
+// console.log(toggleTodoCompleted(todos, 1));
+
+const updateTodoTitle = (todos, id, newTitle) => {
+	return todos.map((todo) => {
+		return todo.id === id ? { ...todo, title: newTitle } : todo;
+	});
+};
+
+// console.log(updateTodoTitle(todos, 1, "Study"));
+
+const getVisibleTodos = (todos, filterType) => {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+
+	if (filterType === "all") {
+		return todos;
+	}
+	if (filterType === "active") {
+		return todos.filter((todo) => !todo.completed);
+	}
+	if (filterType === "completed") {
+		return todos.filter((todo) => todo.completed);
+	}
+	if (filterType === "overdue") {
+		return todos.filter((todo) => {
+			const todoDate = new Date(todo.dueDate);
+			todoDate.setHours(0, 0, 0, 0);
+			return !todo.completed && todoDate < today;
+		});
+	}
+	return [];
+};
+
+console.log(getVisibleTodos(todos, "overdue"));
+
+/*
+
+✅ To masz dobrze
+
+👉 "all" → wszystkie ✔️
+👉 "active" → completed: false ✔️
+👉 "completed" → completed: true ✔️
+
+⚠️ Mała poprawka (ważna)
+
+Napisałeś:
+
+„overdue data do przodu”
+
+👉 ❌ to nie do przodu
+
+🧠 Overdue = co to znaczy
+
+👉 przeterminowane
+
+Czyli:
+
+data jest w przeszłości
+i todo NIE jest completed
+*/
