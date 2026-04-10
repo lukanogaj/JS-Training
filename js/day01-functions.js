@@ -1,8 +1,8 @@
 const todos = [
 	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-08" },
-	{ id: 2, title: "Code", completed: true, dueDate: "2026-05-08" },
+	{ id: 2, title: "Code", completed: false, dueDate: "2026-04-12" },
 	{ id: 3, title: "Shop", completed: true, dueDate: "2026-05-12" },
-	{ id: 4, title: "Read", completed: false, dueDate: "2026-05-07" },
+	{ id: 4, title: "Read", completed: false, dueDate: "2026-04-10" },
 ];
 
 // /// 05.04.2026 Sunday
@@ -144,7 +144,7 @@ const markTodoCompleted = (todos, id) => {
 
 console.log(markTodoCompleted(todos, 2));
 
-const getDashBoardData = (todos) => {
+const getDashboardData = (todos) => {
 	const stats = groupTodosByStatus(todos);
 	return {
 		total: todos.length,
@@ -155,17 +155,7 @@ const getDashBoardData = (todos) => {
 	};
 };
 
-console.log(getDashBoardData(todos));
-
-const getTodayTodosFilter = (todos) => {
-	const today = getToday();
-	return todos.filter((todo) => {
-		const todoDate = normalizeDate(todo.dueDate);
-		return !todo.completed && todoDate.getTime() === today.getTime();
-	});
-};
-
-console.log(getTodayTodosFilter(todos));
+console.log(getDashboardData(todos));
 
 const sortTodosByDate = (todos) => {
 	return [...todos].sort((todoA, todoB) => {
@@ -217,7 +207,6 @@ console.log(getCompletionRate(todos));
 
 const getOverdueTodos = (todos) => {
 	const today = getToday();
-	console.log(todos);
 	return todos
 		.filter((todo) => {
 			const todoDate = normalizeDate(todo.dueDate);
@@ -257,3 +246,37 @@ const groupActiveTodosByDate = (todos) => {
 };
 
 console.log(groupActiveTodosByDate(todos));
+
+///////////////////
+// 10.04.2026
+//////////////////
+
+const getTodayTitles = (todos) => {
+	const today = getToday();
+	return todos.reduce((acc, todo) => {
+		const todoDate = normalizeDate(todo.dueDate);
+		if (!todo.completed && today.getTime() === todoDate.getTime()) {
+			acc.push(todo.title);
+		}
+		return acc;
+	}, []);
+};
+
+console.log(getTodayTitles(todos));
+
+const getNearestUpcomingTodo = (todos) => {
+	const today = getToday().getTime();
+	const upcoming = todos
+		.filter((todo) => {
+			const todoDate = normalizeDate(todo.dueDate).getTime();
+			return !todo.completed && todoDate > today;
+		})
+		.sort((todoA, todoB) => {
+			const dateA = normalizeDate(todoA.dueDate).getTime();
+			const dateB = normalizeDate(todoB.dueDate).getTime();
+			return dateA - dateB;
+		});
+	return upcoming[0] || null;
+};
+
+console.log(getNearestUpcomingTodo(todos));
