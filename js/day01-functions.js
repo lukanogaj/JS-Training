@@ -1,11 +1,10 @@
-const todos = [
-	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-08" },
-	{ id: 2, title: "Code", completed: false, dueDate: "2026-04-11" },
-	{ id: 3, title: "Shop", completed: true, dueDate: "2026-05-12" },
-	{ id: 4, title: "Read", completed: false, dueDate: "2026-04-10" },
-];
-
 // /// 05.04.2026 Sunday
+const todos = [
+	{ id: 1, title: "Gym", completed: false, dueDate: "2026-03-08T07:00:00" },
+	{ id: 2, title: "Code", completed: false, dueDate: "2026-04-11T18:30:00" },
+	{ id: 3, title: "Shop", completed: true, dueDate: "2026-05-12T12:00:00" },
+	{ id: 4, title: "Read", completed: false, dueDate: "2026-04-10T21:00:00" },
+];
 
 const getToday = () => new Date();
 
@@ -47,6 +46,29 @@ const todayCheck = (inputDate) => {
 
 	return "future";
 };
+
+const getTodoStatus = (todo) => {
+	const todoDate = parseDate(todo.dueDate);
+	const status = todayCheck(todoDate);
+	return status;
+};
+
+const getTodoTimeStatus = (todo) => {
+	const todayTimeStatus = getTodoStatus(todo);
+	const date = new Date(todo.dueDate);
+	const actualTime = new Date();
+	if (todayTimeStatus !== "today") {
+		return todayTimeStatus;
+	}
+	if (todayTimeStatus) {
+		return date < actualTime ? "past" : "today";
+	}
+
+	return todayTimeStatus;
+};
+
+console.log(getTodoTimeStatus(todos));
+
 const deleteTodo = (todos, id) => {
 	return todos.filter((todo) => todo.id !== id);
 };
@@ -72,7 +94,12 @@ const groupTodos = (todos) => {
 };
 //
 const getCompletedTitles = (todos) => {
-	return todos.filter((todo) => todo.completed).map((todo) => todo.title);
+	return todos.reduce((acc, todo) => {
+		if (todo.completed) {
+			acc.push(todo.title);
+		}
+		return acc;
+	}, []);
 };
 
 //
@@ -148,8 +175,6 @@ const groupTodosByStatus = (todos) => {
 	);
 };
 
-console.log(groupTodosByStatus(todos));
-
 // Function for today date without time and compare the dates with getTime()
 
 const getTodayTodos = (todos) => {
@@ -166,15 +191,11 @@ const getTodayTodos = (todos) => {
 	}, []);
 };
 
-console.log(getTodayTodos(todos));
-
 const markTodoCompleted = (todos, id) => {
 	return todos.map((todo) => {
 		return todo.id === id ? { ...todo, completed: true } : todo;
 	});
 };
-
-console.log(markTodoCompleted(todos, 2));
 
 const getDashboardData = (todos) => {
 	const stats = groupTodosByStatus(todos);
@@ -187,8 +208,6 @@ const getDashboardData = (todos) => {
 	};
 };
 
-console.log(getDashboardData(todos));
-
 const sortTodosByDate = (todos) => {
 	return [...todos].sort((todoA, todoB) => {
 		const dateA = parseDate(todoA.dueDate).getTime();
@@ -198,17 +217,18 @@ const sortTodosByDate = (todos) => {
 	});
 };
 
-console.log(sortTodosByDate(todos));
-
 ////////////////
 // 09.04.2026
 
 const getUpcomingTodos = (todos) => {
-	const today = getToday();
 	return todos
 		.filter((todo) => {
+			return !todo.completed;
+		})
+		.filter((todo) => {
 			const todoDate = parseDate(todo.dueDate);
-			return !todo.completed && todoDate > today;
+			const status = todayCheck(todoDate);
+			return status === "future";
 		})
 		.sort((todoA, todoB) => {
 			const dateA = parseDate(todoA.dueDate).getTime();
@@ -217,8 +237,6 @@ const getUpcomingTodos = (todos) => {
 			return dateA - dateB;
 		});
 };
-
-console.log(getUpcomingTodos(todos));
 
 const getCompletionRate = (todos) => {
 	const total = todos.length;
@@ -235,38 +253,45 @@ const getCompletionRate = (todos) => {
 	return Math.round((completed / total) * 100);
 };
 
-console.log(getCompletionRate(todos));
-
 const getOverdueTodos = (todos) => {
-	const today = getToday();
 	return todos
-		.filter((todo) => {
-			const todoDate = parseDate(todo.dueDate);
+		.reduce((acc, todo) => {
+			if (todo.completed) {
+				return acc;
+			}
+			const status = getTodoStatus(todo);
 
-			return !todo.completed && todoDate < today;
-		})
+			if (status !== "past") {
+				return acc;
+			}
+
+			acc.push(todo);
+			return acc;
+		}, [])
 		.sort((overdueA, overdueB) => {
-			const dateA = parseDate(overdueA.dueDate);
+			const dateA = parseDate(overdueA.dueDate).getTime();
 			const dateB = parseDate(overdueB.dueDate).getTime();
 			return dateA - dateB;
 		});
 };
 
-console.log(getOverdueTodos(todos));
-
 ///////////////////
 const groupActiveTodosByDate = (todos) => {
 	return todos.reduce(
 		(acc, todo) => {
-			const todoDate = parseDate(todo.dueDate);
-			const status = todayCheck(todoDate);
-			if (!todo.completed && status === "past") {
+			if (todo.completed) {
+				return acc;
+			}
+			const status = getTodoStatus(todo);
+			if (status === "past") {
 				acc.overdue.push(todo);
 				return acc;
-			} else if (!todo.completed && status === "today") {
+			}
+			if (status === "today") {
 				acc.today.push(todo);
 				return acc;
-			} else if (!todo.completed && status === "future") {
+			}
+			if (status === "future") {
 				acc.future.push(todo);
 				return acc;
 			}
@@ -275,7 +300,6 @@ const groupActiveTodosByDate = (todos) => {
 		{ overdue: [], today: [], future: [] },
 	);
 };
-
 console.log(groupActiveTodosByDate(todos));
 
 ///////////////////
@@ -296,25 +320,7 @@ const getTodayTitles = (todos) => {
 	}, []);
 };
 
-console.log(getTodayTitles(todos));
-
 const getNearestUpcomingTodo = (todos) => {
-	const today = getToday().getTime();
-	const upcoming = todos
-		.filter((todo) => {
-			const todoDate = parseDate(todo.dueDate).getTime();
-			return !todo.completed && todoDate > today;
-		})
-		.sort((todoA, todoB) => {
-			const dateA = parseDate(todoA.dueDate).getTime();
-			const dateB = parseDate(todoB.dueDate).getTime();
-			return dateA - dateB;
-		});
+	const upcoming = getUpcomingTodos(todos);
 	return upcoming[0] || null;
 };
-
-console.log(getNearestUpcomingTodo(todos));
-
-//////////////////
-// 11.04.2026 refactor Michal refactor
-/////////////////
