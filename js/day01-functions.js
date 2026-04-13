@@ -4,8 +4,26 @@ const todos = [
 	{ id: 2, title: "Code", completed: false, dueDate: "2026-04-11T18:30:00" },
 	{ id: 3, title: "Shop", completed: true, dueDate: "2026-05-12T12:00:00" },
 	{ id: 4, title: "Read", completed: false, dueDate: "2026-04-10T21:00:00" },
-];
+	{
+		id: 7,
+		title: "Tomorrow task",
+		completed: false,
+		dueDate: "2026-04-14T10:00:00",
+	},
 
+	{
+		id: 5,
+		title: "Today morning",
+		completed: false,
+		dueDate: "2026-04-13T08:00:00",
+	},
+	{
+		id: 6,
+		title: "Today evening",
+		completed: false,
+		dueDate: "2026-04-13T21:00:00",
+	},
+];
 const getToday = () => new Date();
 
 // Function to normalize date string
@@ -57,18 +75,20 @@ const getTodoTimeStatus = (todo) => {
 	const todayTimeStatus = getTodoStatus(todo);
 	const date = new Date(todo.dueDate);
 	const actualTime = new Date();
-	if (todayTimeStatus !== "today") {
-		return todayTimeStatus;
-	}
-	if (todayTimeStatus) {
-		return date < actualTime ? "past" : "today";
-	}
 
-	return todayTimeStatus;
+	return todayTimeStatus !== "today"
+		? todayTimeStatus
+		: date < actualTime
+			? "past"
+			: "today";
 };
 
-console.log(getTodoTimeStatus(todos));
-
+console.log(
+	todos.map((todo) => ({
+		title: todo.title,
+		status: getTodoTimeStatus(todo),
+	})),
+);
 const deleteTodo = (todos, id) => {
 	return todos.filter((todo) => todo.id !== id);
 };
@@ -145,8 +165,8 @@ const getOverdueTitles = (todos) => {
 		if (todo.completed) {
 			return acc;
 		}
-		const todoDate = parseDate(todo.dueDate);
-		const status = todayCheck(todoDate);
+
+		const status = getTodoTimeStatus(todo);
 
 		if (status === "past") {
 			acc.push(todo.title);
@@ -155,13 +175,13 @@ const getOverdueTitles = (todos) => {
 	}, []);
 };
 
+console.log(getOverdueTitles(todos));
 //
 
 const groupTodosByStatus = (todos) => {
 	return todos.reduce(
 		(acc, todo) => {
-			const todoDate = parseDate(todo.dueDate);
-			const status = todayCheck(todoDate);
+			const status = getTodoTimeStatus(todo);
 			if (todo.completed) {
 				acc.completed.push(todo);
 			} else if (status === "past") {
@@ -175,6 +195,8 @@ const groupTodosByStatus = (todos) => {
 	);
 };
 
+console.log(groupTodosByStatus(todos));
+
 // Function for today date without time and compare the dates with getTime()
 
 const getTodayTodos = (todos) => {
@@ -182,14 +204,15 @@ const getTodayTodos = (todos) => {
 		if (todo.completed) {
 			return acc;
 		}
-		const todoDate = parseDate(todo.dueDate);
-		const status = todayCheck(todoDate);
+		const status = getTodoTimeStatus(todo);
 		if (status === "today") {
 			acc.push(todo);
 		}
 		return acc;
 	}, []);
 };
+
+console.log("TODAY:", getTodayTodos(todos));
 
 const markTodoCompleted = (todos, id) => {
 	return todos.map((todo) => {
@@ -226,8 +249,7 @@ const getUpcomingTodos = (todos) => {
 			return !todo.completed;
 		})
 		.filter((todo) => {
-			const todoDate = parseDate(todo.dueDate);
-			const status = todayCheck(todoDate);
+			const status = getTodoTimeStatus(todo);
 			return status === "future";
 		})
 		.sort((todoA, todoB) => {
@@ -237,6 +259,8 @@ const getUpcomingTodos = (todos) => {
 			return dateA - dateB;
 		});
 };
+
+console.log(getUpcomingTodos(todos));
 
 const getCompletionRate = (todos) => {
 	const total = todos.length;
@@ -259,8 +283,7 @@ const getOverdueTodos = (todos) => {
 			if (todo.completed) {
 				return acc;
 			}
-			const status = getTodoStatus(todo);
-
+			const status = getTodoTimeStatus(todo);
 			if (status !== "past") {
 				return acc;
 			}
@@ -282,7 +305,8 @@ const groupActiveTodosByDate = (todos) => {
 			if (todo.completed) {
 				return acc;
 			}
-			const status = getTodoStatus(todo);
+			const status = getTodoTimeStatus(todo);
+
 			if (status === "past") {
 				acc.overdue.push(todo);
 				return acc;
@@ -311,14 +335,16 @@ const getTodayTitles = (todos) => {
 		if (todo.completed) {
 			return acc;
 		}
-		const todoDate = parseDate(todo.dueDate);
-		const status = todayCheck(todoDate);
+
+		const status = getTodoTimeStatus(todo);
 		if (status === "today") {
 			acc.push(todo.title);
 		}
 		return acc;
 	}, []);
 };
+
+console.log(getTodayTitles(todos));
 
 const getNearestUpcomingTodo = (todos) => {
 	const upcoming = getUpcomingTodos(todos);
