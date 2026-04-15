@@ -24,71 +24,40 @@ const todos = [
 		dueDate: "2026-04-13T21:00:00",
 	},
 ];
-const getToday = () => new Date();
 
 // Function to normalize date string
 const parseDate = (dateString) => {
 	return new Date(dateString);
 };
 
-/// Function to check
-const todayCheck = (inputDate) => {
-	const today = new Date();
+/* Ta funkcja sprawdza czas zeby okreslic, czy overdue czy nie , jesli czas minal to todo staje sie overdue */
 
+const todoTimeStatus = (inputDate) => {
+	//ponizej zamienaim daty na objekty
+	const today = new Date(); // tu mam  dzien dzisiejszy
+	const taskDate = new Date(inputDate);
+	// Tutaj sprawdzam dzien dzisiejszy,rowniez czas
 	if (
-		today.getFullYear() === inputDate.getFullYear() &&
-		today.getMonth() === inputDate.getMonth() &&
-		today.getDate() === inputDate.getDate()
-	) {
+		today.getFullYear() === taskDate.getFullYear() &&
+		today.getMonth() === taskDate.getMonth() &&
+		today.getDate() === taskDate.getDate()
+	)
 		return "today";
-	}
 
-	if (inputDate.getFullYear() < today.getFullYear()) {
-		return "past";
-	}
-
-	if (
-		inputDate.getFullYear() === today.getFullYear() &&
-		inputDate.getMonth() < today.getMonth()
-	) {
-		return "past";
-	}
-
-	if (
-		inputDate.getFullYear() === today.getFullYear() &&
-		inputDate.getMonth() === today.getMonth() &&
-		inputDate.getDate() < today.getDate()
-	) {
-		return "past";
-	}
-
+	//Tutaj sprawdzam past , juz nie potrzebuje sprawdzac rok,miesiac,dzien , bo pierwszy if to robi
+	if (taskDate < today) return "past";
+	// Jak nie dzisiaj nie preszlosc to zostaje sam return future
 	return "future";
 };
 
+console.log(todoTimeStatus("2026-04-10T21:00:00"));
+
 const getTodoStatus = (todo) => {
 	const todoDate = parseDate(todo.dueDate);
-	const status = todayCheck(todoDate);
+	const status = todoTimeStatus(todoDate);
 	return status;
 };
 
-const getTodoTimeStatus = (todo) => {
-	const todayTimeStatus = getTodoStatus(todo);
-	const date = new Date(todo.dueDate);
-	const actualTime = new Date();
-
-	return todayTimeStatus !== "today"
-		? todayTimeStatus
-		: date < actualTime
-			? "past"
-			: "today";
-};
-
-console.log(
-	todos.map((todo) => ({
-		title: todo.title,
-		status: getTodoTimeStatus(todo),
-	})),
-);
 const deleteTodo = (todos, id) => {
 	return todos.filter((todo) => todo.id !== id);
 };
@@ -98,20 +67,6 @@ const getCompletedTodos = (todos) => {
 	return todos.filter((todo) => todo.completed);
 };
 
-//
-const groupTodos = (todos) => {
-	return todos.reduce(
-		(acc, todo) => {
-			if (todo.completed) {
-				acc.completed.push(todo);
-			} else {
-				acc.active.push(todo);
-			}
-			return acc;
-		},
-		{ completed: [], active: [] },
-	);
-};
 //
 const getCompletedTitles = (todos) => {
 	return todos.reduce((acc, todo) => {
@@ -133,23 +88,6 @@ const countActiveTodos = (todos) => {
 };
 
 //
-const getTodosStats = (todos) => {
-	return todos.reduce(
-		(acc, todo) => {
-			acc.total++;
-
-			if (todo.completed) {
-				acc.completed++;
-			} else {
-				acc.active++;
-			}
-
-			return acc;
-		},
-		{ total: 0, completed: 0, active: 0 },
-	);
-};
-//
 const getActiveTitles = (todos) => {
 	return todos.reduce((acc, todo) => {
 		if (!todo.completed) {
@@ -166,9 +104,9 @@ const getOverdueTitles = (todos) => {
 			return acc;
 		}
 
-		const status = getTodoTimeStatus(todo);
+		const status = getTodoStatus(todo);
 
-		if (status === "past") {
+		if (status === "overdue") {
 			acc.push(todo.title);
 		}
 		return acc;
@@ -181,17 +119,19 @@ console.log(getOverdueTitles(todos));
 const groupTodosByStatus = (todos) => {
 	return todos.reduce(
 		(acc, todo) => {
-			const status = getTodoTimeStatus(todo);
+			const status = getTodoStatus(todo);
 			if (todo.completed) {
 				acc.completed.push(todo);
-			} else if (status === "past") {
+			} else if (status === "overdue") {
 				acc.overdue.push(todo);
+			} else if (status === "today") {
+				acc.today.push(todo);
 			} else {
-				acc.active.push(todo);
+				acc.future.push(todo);
 			}
 			return acc;
 		},
-		{ active: [], completed: [], overdue: [] },
+		{ today: [], completed: [], overdue: [], future: [] },
 	);
 };
 
@@ -204,7 +144,7 @@ const getTodayTodos = (todos) => {
 		if (todo.completed) {
 			return acc;
 		}
-		const status = getTodoTimeStatus(todo);
+		const status = getTodoStatus(todo);
 		if (status === "today") {
 			acc.push(todo);
 		}
@@ -225,9 +165,9 @@ const getDashboardData = (todos) => {
 	return {
 		total: todos.length,
 		completed: stats.completed.length,
-		active: stats.active.length,
 		overdue: stats.overdue.length,
-		today: getTodayTodos(todos).length,
+		today: stats.today.length,
+		future: stats.future.length,
 	};
 };
 
@@ -249,7 +189,7 @@ const getUpcomingTodos = (todos) => {
 			return !todo.completed;
 		})
 		.filter((todo) => {
-			const status = getTodoTimeStatus(todo);
+			const status = getTodoStatus(todo);
 			return status === "future";
 		})
 		.sort((todoA, todoB) => {
@@ -283,8 +223,8 @@ const getOverdueTodos = (todos) => {
 			if (todo.completed) {
 				return acc;
 			}
-			const status = getTodoTimeStatus(todo);
-			if (status !== "past") {
+			const status = getTodoStatus(todo);
+			if (status !== "overdue") {
 				return acc;
 			}
 
@@ -299,15 +239,15 @@ const getOverdueTodos = (todos) => {
 };
 
 ///////////////////
-const groupActiveTodosByDate = (todos) => {
+const groupTodosByDate = (todos) => {
 	return todos.reduce(
 		(acc, todo) => {
 			if (todo.completed) {
 				return acc;
 			}
-			const status = getTodoTimeStatus(todo);
+			const status = getTodoStatus(todo);
 
-			if (status === "past") {
+			if (status === "overdue") {
 				acc.overdue.push(todo);
 				return acc;
 			}
@@ -324,7 +264,7 @@ const groupActiveTodosByDate = (todos) => {
 		{ overdue: [], today: [], future: [] },
 	);
 };
-console.log(groupActiveTodosByDate(todos));
+console.log(groupTodosByDate(todos));
 
 ///////////////////
 // 10.04.2026
@@ -336,7 +276,7 @@ const getTodayTitles = (todos) => {
 			return acc;
 		}
 
-		const status = getTodoTimeStatus(todo);
+		const status = getTodoStatus(todo);
 		if (status === "today") {
 			acc.push(todo.title);
 		}
