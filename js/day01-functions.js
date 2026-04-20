@@ -25,22 +25,21 @@ const todos = [
 ];
 
 // Function to normalize date string
-// Funkcja ktora bierze string daty i zamienia go na objekt Date zeby mozna bylo porownywac
+// Parse date string into Date object
 const getDateFromString = (dateString) => {
 	return new Date(dateString);
 };
 
-/// Zrobilem 3 kategorie today,overdue, future
+// Determine todo status: today, overdue, or future (based on day only)
 const todoTimeStatus = (inputDate) => {
-	// W tej funkcji jest proste porownanie tylko dnia, nie godziny
-	// dlatego uzywam setHours, najprosciej
-	const today = new Date().setHours(0, 0, 0, 0); // dzisiejszy dzien, godziny wyzerowane
+	// normalize both dates to start of day (ignore time)
+	const today = new Date().setHours(0, 0, 0, 0);
 	const taskDate = new Date(inputDate).setHours(0, 0, 0, 0);
 
-	// Tutaj sprawdzam dzien dzisiejszy
+	// check if task is today
 	if (taskDate === today) return "today";
 
-	// Tutaj sprawdzam overdue, jak nie overdue to daje future
+	// check if task is overdue, otherwise it's future
 	return taskDate < today ? "overdue" : "future";
 };
 
@@ -53,9 +52,17 @@ const getTodoDateCategory = (todo) => {
 	return category;
 };
 
-// Function to delete todo
+// Function to delete todo ,for small apps
 const deleteTodo = (todos, id) => {
-	return todos.filter((todo) => todo.id !== id);
+	return todos.map((todo) => todo.id !== id);
+};
+/// Function to delete todos is we have thousands of them with method I found in MDN new Map, I don't know if this is a good approach just testing, still not fully understand this new Map method, code coied from mdn i google. I hope so this what you mean , by protect processor
+const deleteTodoById = (todos, id) => {
+	const map = new Map(todos.map((todo) => [todo.id, todo]));
+
+	map.delete(id);
+
+	return Array.from(map.values());
 };
 
 /// This function only check  boolean value of todo
@@ -114,6 +121,7 @@ const getOverdueTitles = (todos) => {
 console.log(getOverdueTitles(todos));
 
 // Groups todos into categories: completed, overdue, today, and future using a helper function.
+// This function only create to learn reduce , nothing else ,,, if condition true element is add to the array...only to understan more reduce , nothing else
 const groupTodosByStatus = (todos) => {
 	return todos.reduce(
 		(acc, todo) => {
@@ -148,10 +156,25 @@ const getTodayTodos = (todos) => {
 console.log("TODAY:", getTodayTodos(todos));
 
 /// Checks for a todo by id and returns a new object with completed set to true.
+
 const markTodoCompleted = (todos, id) => {
 	return todos.map((todo) => {
 		return todo.id === id ? { ...todo, completed: true } : todo;
 	});
+};
+
+// Here I copy code form google and mnd , still not fully understand new Map method
+const markTodoCompletedById = (todosById, id) => {
+	const todo = todosById.get(id);
+
+	if (!todo) {
+		return todosById;
+	}
+
+	const nextMap = new Map(todosById);
+	nextMap.set(id, { ...todo, completed: true });
+
+	return nextMap;
 };
 
 console.log(markTodoCompleted(todos));
@@ -176,7 +199,7 @@ const sortTodosByDate = (todos) => {
 		const dateA = getDateFromString(todoA.dueDate).getTime();
 		const dateB = getDateFromString(todoB.dueDate).getTime();
 
-		return dateA - dateB; // najstarsze → najnowsze
+		return dateA - dateB; // oldest  → newest
 	});
 };
 
@@ -203,103 +226,40 @@ const getUpcomingTodos = (todos) => {
 
 console.log(getUpcomingTodos(todos));
 
+/// Function below calculate percentage of completed todos
 const getCompletionRate = (todos) => {
+	// get total number of todos
 	const total = todos.length;
 
 	if (total === 0) {
 		return 0;
 	}
-
+	// Count completed todos
 	const completed = todos.reduce((acc, todo) => {
 		if (todo.completed) {
 			return acc + 1;
 		}
 		return acc;
 	}, 0);
-
+	// return percentage
 	return Math.round((completed / total) * 100);
 };
 
+/// Function returns overdue todos (not completed), sorted from oldest to newest
 const getOverdueTodos = (todos) => {
-	return todos
-		.reduce((acc, todo) => {
-			if (todo.completed) {
-				return acc;
-			}
+	// filter active overdue todos
+	return (
+		todos
+			.filter((todo) => {
+				const category = getTodoDateCategory(todo);
+				return !todo.completed && category === "overdue";
+			})
+			// sort them oldest to newest
+			.sort((overdueA, overdueB) => {
+				const dateA = getDateFromString(overdueA.dueDate).getTime();
+				const dateB = getDateFromString(overdueB.dueDate).getTime();
 
-			const category = getTodoDateCategory(todo);
-
-			if (category !== "overdue") {
-				return acc;
-			}
-
-			acc.push(todo);
-			return acc;
-		}, [])
-		.sort((overdueA, overdueB) => {
-			const dateA = getDateFromString(overdueA.dueDate).getTime();
-			const dateB = getDateFromString(overdueB.dueDate).getTime();
-
-			return dateA - dateB;
-		});
-};
-
-///////////////////
-const groupTodosByDate = (todos) => {
-	return todos.reduce(
-		(acc, todo) => {
-			if (todo.completed) {
-				return acc;
-			}
-
-			const category = getTodoDateCategory(todo);
-
-			if (category === "overdue") {
-				acc.overdue.push(todo);
-				return acc;
-			}
-
-			if (category === "today") {
-				acc.today.push(todo);
-				return acc;
-			}
-
-			if (category === "future") {
-				acc.future.push(todo);
-				return acc;
-			}
-
-			return acc;
-		},
-		{ overdue: [], today: [], future: [] },
+				return dateA - dateB;
+			})
 	);
-};
-
-console.log(groupTodosByDate(todos));
-
-///////////////////
-// 10.04.2026
-//////////////////
-
-const getTodayTitles = (todos) => {
-	return todos.reduce((acc, todo) => {
-		if (todo.completed) {
-			return acc;
-		}
-
-		const category = getTodoDateCategory(todo);
-
-		if (category === "today") {
-			acc.push(todo.title);
-		}
-
-		return acc;
-	}, []);
-};
-
-console.log(getTodayTitles(todos));
-
-const getNearestUpcomingTodo = (todos) => {
-	const upcoming = getUpcomingTodos(todos);
-	return upcoming[0] || null;
 };
