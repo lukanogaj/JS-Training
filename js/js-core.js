@@ -265,3 +265,104 @@
 // };
 
 /// 21.04.2026 Tuesday
+const todos = [
+	{
+		id: 1,
+		title: "Morning workout",
+		completed: false,
+		dueDate: "2026-04-21T07:00:00",
+		priority: "high",
+	},
+	{
+		id: 2,
+		title: "Finish React task",
+		completed: false,
+		dueDate: "2026-04-21T18:30:00",
+		priority: "high",
+	},
+	{
+		id: 3,
+		title: "Buy groceries",
+		completed: true,
+		dueDate: "2026-04-20T12:00:00",
+		priority: "low",
+	},
+	{
+		id: 4,
+		title: "Read documentation",
+		completed: false,
+		dueDate: "2026-04-19T21:00:00",
+		priority: "medium",
+	},
+	{
+		id: 5,
+		title: "Call family",
+		completed: false,
+		dueDate: "2026-04-22T08:00:00",
+		priority: "low",
+	},
+	{
+		id: 6,
+		title: "Fix bug in modal",
+		completed: false,
+		dueDate: "2026-04-18T10:00:00",
+		priority: "high",
+	},
+	{
+		id: 7,
+		title: "Deploy portfolio",
+		completed: true,
+		dueDate: "2026-04-17T09:00:00",
+		priority: "high",
+	},
+	{
+		id: 8,
+		title: "Prepare dashboard data",
+		completed: false,
+		dueDate: "2026-04-23T14:00:00",
+		priority: "medium",
+	},
+];
+
+///m
+// 21.04.2026 Tuesday
+
+// Set date for begin of the day
+const normalizeToDay = (dateInput) => {
+	const date = new Date(dateInput);
+	date.setHours(0, 0, 0, 0);
+	return date;
+};
+
+// normalizeToDay();
+const todayDate = new Date("2026-04-21T09:00:00");
+
+console.log(normalizeToDay(todayDate));
+console.log(normalizeToDay("2026-04-21T18:30:00"));
+console.log(normalizeToDay("2026-04-20T23:59:00"));
+
+const getTodoStatus = (todo, todayDate) => {
+	const today = normalizeToDay(todayDate).getTime();
+	const date = normalizeToDay(todo.dueDate).getTime();
+	if (today === date) {
+		return "today";
+	} else if (date < today) {
+		return "overdue";
+	} else {
+		return "future";
+	}
+};
+
+console.log(getTodoStatus(todos[2], todayDate));
+
+////////////
+
+const getTodayTodos = (todos) => {
+	return todos.filter((todo) => {
+		const status = getTodoStatus(todo, todayDate);
+
+		return status === "today";
+	});
+};
+
+console.log(getTodayTodos(todos));
