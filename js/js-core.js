@@ -366,3 +366,74 @@ const getTodayTodos = (todos) => {
 };
 
 console.log(getTodayTodos(todos));
+
+//////////////////////
+// 22.04.2026 Wednesday
+const getOverdueTodos = (todos) => {
+	return todos.filter((todo) => {
+		const status = getTodoStatus(todo, todayDate);
+		return !todo.completed && status === "overdue";
+	});
+};
+
+console.log(getOverdueTodos(todos));
+
+///////////////
+const getOverdueTodosSorted = (todos) => {
+	const overdueTodos = getOverdueTodos(todos);
+	return overdueTodos.sort((overdueA, overdueB) => {
+		const dateA = normalizeToDay(overdueA.dueDate).getTime();
+		const dateB = normalizeToDay(overdueB.dueDate).getTime();
+		return dateA - dateB;
+	});
+};
+
+console.log(getOverdueTodosSorted(todos));
+
+/////////////
+const getFutureTodosSorted = (todos) => {
+	return todos
+		.filter((todo) => {
+			const status = getTodoStatus(todo, todayDate);
+			return !todo.completed && status === "future";
+		})
+		.sort((futureA, futureB) => {
+			const dateA = normalizeToDay(futureA.dueDate).getTime();
+			const dateB = normalizeToDay(futureB.dueDate).getTime();
+			return dateA - dateB;
+		});
+};
+
+console.log(getFutureTodosSorted(todos));
+
+///////
+const getTodayTodosSorted = (todos) => {
+	return todos
+		.filter((todo) => {
+			const status = getTodoStatus(todo, todayDate);
+			return !todo.completed && status === "today";
+		})
+		.sort((todayA, todayB) => {
+			const dateA = normalizeToDay(todayA.dueDate).getTime();
+			const dateB = normalizeToDay(todayB.dueDate).getTime();
+			return dateA - dateB;
+		});
+};
+
+console.log(getTodayTodosSorted(todos));
+
+//////
+const getTodosByStatusSorted = (todos, status) => {
+	return todos
+		.filter((todo) => {
+			const todoStatus = getTodoStatus(todo, todayDate);
+			return !todo.completed && todoStatus === status;
+		})
+		.sort((todoA, todoB) => {
+			const dateA = normalizeToDay(todoA.dueDate).getTime();
+			const dateB = normalizeToDay(todoB.dueDate).getTime();
+			return dateA - dateB;
+		});
+};
+
+console.log(getTodosByStatusSorted(todos, "future"));
