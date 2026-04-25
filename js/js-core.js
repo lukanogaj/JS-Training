@@ -324,6 +324,14 @@ const todos = [
 	},
 ];
 
+///
+//
+const status = {
+	TODAY: "today",
+	OVERDUE: "overdue",
+	FUTURE: "future",
+};
+
 ///m
 // 21.04.2026 Tuesday
 
@@ -336,10 +344,6 @@ const normalizeToDay = (dateInput) => {
 
 // normalizeToDay();
 const todayDate = new Date("2026-04-21T09:00:00");
-
-console.log(normalizeToDay(todayDate));
-console.log(normalizeToDay("2026-04-21T18:30:00"));
-console.log(normalizeToDay("2026-04-20T23:59:00"));
 
 const getTodoStatus = (todo, todayDate) => {
 	const today = normalizeToDay(todayDate).getTime();
@@ -358,71 +362,26 @@ console.log(getTodoStatus(todos[2], todayDate));
 ////////////
 
 const getTodayTodos = (todos) => {
-	return todos.filter((todo) => {
-		const status = getTodoStatus(todo, todayDate);
-
-		return status === "today";
-	});
+	return todos
+		.filter((todo) => {
+			return !todo.completed;
+		})
+		.filter((todo) => {
+			const status = getTodoStatus(todo, todayDate);
+			return status === "today";
+		});
 };
 
 console.log(getTodayTodos(todos));
 
 //////////////////////
 // 22.04.2026 Wednesday
-const getOverdueTodos = (todos) => {
-	return todos.filter((todo) => {
-		const status = getTodoStatus(todo, todayDate);
-		return !todo.completed && status === "overdue";
-	});
-};
 
-console.log(getOverdueTodos(todos));
-
-///////////////
-const getOverdueTodosSorted = (todos) => {
-	const overdueTodos = getOverdueTodos(todos);
-	return overdueTodos.sort((overdueA, overdueB) => {
-		const dateA = normalizeToDay(overdueA.dueDate).getTime();
-		const dateB = normalizeToDay(overdueB.dueDate).getTime();
-		return dateA - dateB;
-	});
-};
-
-console.log(getOverdueTodosSorted(todos));
-
-/////////////
-const getFutureTodosSorted = (todos) => {
-	return todos
-		.filter((todo) => {
-			const status = getTodoStatus(todo, todayDate);
-			return !todo.completed && status === "future";
-		})
-		.sort((futureA, futureB) => {
-			const dateA = normalizeToDay(futureA.dueDate).getTime();
-			const dateB = normalizeToDay(futureB.dueDate).getTime();
-			return dateA - dateB;
-		});
-};
-
-console.log(getFutureTodosSorted(todos));
-
-///////
-const getTodayTodosSorted = (todos) => {
-	return todos
-		.filter((todo) => {
-			const status = getTodoStatus(todo, todayDate);
-			return !todo.completed && status === "today";
-		})
-		.sort((todayA, todayB) => {
-			const dateA = normalizeToDay(todayA.dueDate).getTime();
-			const dateB = normalizeToDay(todayB.dueDate).getTime();
-			return dateA - dateB;
-		});
-};
-
-console.log(getTodayTodosSorted(todos));
+// learning version
+// first approach before abstraction
 
 //////
+// reusable production helper
 const getTodosByStatusSorted = (todos, status) => {
 	return todos
 		.filter((todo) => {
@@ -435,5 +394,42 @@ const getTodosByStatusSorted = (todos, status) => {
 			return dateA - dateB;
 		});
 };
-
 console.log(getTodosByStatusSorted(todos, "future"));
+
+////////////
+console.log(getTodosByStatusSorted(todos, "future"));
+const getOverdueTodos = (todos) => {
+	return todos.filter((todo) => {
+		const status = getTodoStatus(todo, todayDate);
+		return !todo.completed && status === "overdue";
+	});
+};
+
+console.log(getOverdueTodos(todos));
+
+///////////////
+const getOverdueTodosSorted = (todos) => {
+	const overdueTodos = getTodosByStatusSorted(todos, status.OVERDUE);
+	return overdueTodos;
+};
+
+console.log(getOverdueTodosSorted(todos));
+
+/////////////
+const getFutureTodosSorted = (todos) => {
+	const futureTodos = getTodosByStatusSorted(todos, status.FUTURE);
+	return futureTodos;
+};
+
+console.log(getFutureTodosSorted(todos));
+
+///////
+const getTodayTodosSorted = (todos) => {
+	const todayTodosSorted = getTodosByStatusSorted(todos, status.TODAY);
+	return todayTodosSorted;
+};
+
+console.log(getTodayTodosSorted(todos));
+
+//////
+// reusable production helper
