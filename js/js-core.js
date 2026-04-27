@@ -30,7 +30,7 @@
 // 	return new Date(dateString);
 // };
 
-// // Determine todo status: today, overdue, or future (based on day only)
+// // Determine todo todoStatus: today, overdue, or future (based on day only)
 // const todoTimeStatus = (inputDate) => {
 // 	// normalize both dates to start of day (ignore time)
 // 	const today = new Date().setHours(0, 0, 0, 0);
@@ -45,7 +45,7 @@
 
 // console.log(todoTimeStatus("2026-04-15T21:00:00"));
 
-// /// Function that checks a todo’s date and returns its status: "today", "overdue", or "future".
+// /// Function that checks a todo’s date and returns its todoStatus: "today", "overdue", or "future".
 // const getTodoDateCategory = (todo) => {
 // 	const todoDate = getDateFromString(todo.dueDate);
 // 	const category = todoTimeStatus(todoDate);
@@ -101,14 +101,14 @@
 // };
 // console.log(getActiveTitles(todos));
 
-// // Returns titles of all non-completed overdue todos using a helper to determine status.
+// // Returns titles of all non-completed overdue todos using a helper to determine todoStatus.
 // const getOverdueTitles = (todos) => {
 // 	// Ignore completed
 // 	return todos.reduce((acc, todo) => {
 // 		if (todo.completed) {
 // 			return acc;
 // 		}
-// 		// return status od todo
+// 		// return todoStatus od todo
 // 		const category = getTodoDateCategory(todo);
 // 		// Collects only overdue  and built new array with overdue
 // 		if (category === "overdue") {
@@ -145,7 +145,7 @@
 
 // console.log(groupTodosByStatus(todos));
 
-// // Returns all active todos that belong to "today" by filtering the list using time status and completion state
+// // Returns all active todos that belong to "today" by filtering the list using time todoStatus and completion state
 // const getTodayTodos = (todos) => {
 // 	return todos.filter((todo) => {
 // 		const category = getTodoDateCategory(todo);
@@ -181,7 +181,7 @@
 
 // /// Function
 // const getDashboardData = (todos) => {
-// 	//Returns an object with counts of todos grouped by status.
+// 	//Returns an object with counts of todos grouped by todoStatus.
 // 	const stats = groupTodosByStatus(todos);
 
 // 	return {
@@ -264,7 +264,179 @@
 // 	);
 // };
 
-/// 21.04.2026 Tuesday
+// /// 21.04.2026 Tuesday
+// const todos = [
+// 	{
+// 		id: 1,
+// 		title: "Morning workout",
+// 		completed: false,
+// 		dueDate: "2026-04-21T07:00:00",
+// 		priority: "high",
+// 	},
+// 	{
+// 		id: 2,
+// 		title: "Finish React task",
+// 		completed: false,
+// 		dueDate: "2026-04-21T18:30:00",
+// 		priority: "high",
+// 	},
+// 	{
+// 		id: 3,
+// 		title: "Buy groceries",
+// 		completed: true,
+// 		dueDate: "2026-04-20T12:00:00",
+// 		priority: "low",
+// 	},
+// 	{
+// 		id: 4,
+// 		title: "Read documentation",
+// 		completed: false,
+// 		dueDate: "2026-04-19T21:00:00",
+// 		priority: "medium",
+// 	},
+// 	{
+// 		id: 5,
+// 		title: "Call family",
+// 		completed: false,
+// 		dueDate: "2026-04-22T08:00:00",
+// 		priority: "low",
+// 	},
+// 	{
+// 		id: 6,
+// 		title: "Fix bug in modal",
+// 		completed: false,
+// 		dueDate: "2026-04-18T10:00:00",
+// 		priority: "high",
+// 	},
+// 	{
+// 		id: 7,
+// 		title: "Deploy portfolio",
+// 		completed: true,
+// 		dueDate: "2026-04-17T09:00:00",
+// 		priority: "high",
+// 	},
+// 	{
+// 		id: 8,
+// 		title: "Prepare dashboard data",
+// 		completed: false,
+// 		dueDate: "2026-04-23T14:00:00",
+// 		priority: "medium",
+// 	},
+// ];
+
+// ///
+// //
+// const TODO_STATUS = {
+// 	TODAY: "today",
+// 	OVERDUE: "overdue",
+// 	FUTURE: "future",
+// };
+
+// ///m
+// // 21.04.2026 Tuesday
+
+// // Set date for begin of the day
+// const normalizeToDay = (dateInput) => {
+// 	const date = new Date(dateInput);
+// 	date.setHours(0, 0, 0, 0);
+// 	return date;
+// };
+
+// // normalizeToDay();
+// const todayDate = new Date("2026-04-21T09:00:00");
+
+// const getTodoStatus = (todo, todayDate) => {
+// 	const today = normalizeToDay(todayDate).getTime();
+// 	const date = normalizeToDay(todo.dueDate).getTime();
+// 	if (today === date) {
+// 		return TODO_STATUS.TODAY;
+// 	} else if (date < today) {
+// 		return TODO_STATUS.OVERDUE;
+// 	} else {
+// 		return TODO_STATUS.FUTURE;
+// 	}
+// };
+
+// console.log(getTodoStatus(todos[2], todayDate));
+
+// ////////////
+
+// const getTodayTodos = (todos) => {
+// 	return todos
+// 		.filter((todo) => {
+// 			return !todo.completed;
+// 		})
+// 		.filter((todo) => {
+// 			const todoStatus = getTodoStatus(todo, todayDate);
+// 			return todoStatus === TODO_STATUS.TODAY;
+// 		});
+// };
+
+// console.log(getTodayTodos(todos));
+
+// //////////////////////
+// // 22.04.2026 Wednesday
+
+// // learning version
+// // first approach before abstraction
+
+// //////
+// // reusable production helper
+// const getTodosByStatusSorted = (todos, statusFilter) => {
+// 	return todos
+// 		.filter((todo) => {
+// 			const todoStatus = getTodoStatus(todo, todayDate);
+// 			return !todo.completed && todoStatus === statusFilter;
+// 		})
+// 		.sort((todoA, todoB) => {
+// 			const dateA = normalizeToDay(todoA.dueDate).getTime();
+// 			const dateB = normalizeToDay(todoB.dueDate).getTime();
+// 			return dateA - dateB;
+// 		});
+// };
+// console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
+
+// ////////////
+// console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
+// const getOverdueTodos = (todos) => {
+// 	return todos.filter((todo) => {
+// 		const todoStatus = getTodoStatus(todo, todayDate);
+// 		return !todo.completed && todoStatus === TODO_STATUS.OVERDUE;
+// 	});
+// };
+
+// console.log(getOverdueTodos(todos));
+
+// ///////////////
+// const getOverdueTodosSorted = (todos) => {
+// 	const overdueTodos = getTodosByStatusSorted(todos, TODO_STATUS.OVERDUE);
+// 	return overdueTodos;
+// };
+
+// console.log(getOverdueTodosSorted(todos));
+
+// /////////////
+// const getFutureTodosSorted = (todos) => {
+// 	const futureTodos = getTodosByStatusSorted(todos, TODO_STATUS.FUTURE);
+// 	return futureTodos;
+// };
+
+// console.log(getFutureTodosSorted(todos));
+
+// ///////
+// const getTodayTodosSorted = (todos) => {
+// 	const todayTodosSorted = getTodosByStatusSorted(todos, TODO_STATUS.TODAY);
+// 	return todayTodosSorted;
+// };
+
+// console.log(getTodayTodosSorted(todos));
+
+//////
+// SORT THE PRIORITY OF TODOS
+// 27.04.2026 Monday
+
+/////////////////
+
 const todos = [
 	{
 		id: 1,
@@ -325,11 +497,18 @@ const todos = [
 ];
 
 ///
-//
-const status = {
+//TODO STATUS
+const TODO_STATUS = {
 	TODAY: "today",
 	OVERDUE: "overdue",
 	FUTURE: "future",
+};
+
+/// TODO PRIORITY
+const PRIORITY_ORDER = {
+	high: 1,
+	medium: 2,
+	low: 3,
 };
 
 ///m
@@ -349,11 +528,11 @@ const getTodoStatus = (todo, todayDate) => {
 	const today = normalizeToDay(todayDate).getTime();
 	const date = normalizeToDay(todo.dueDate).getTime();
 	if (today === date) {
-		return "today";
+		return TODO_STATUS.TODAY;
 	} else if (date < today) {
-		return "overdue";
+		return TODO_STATUS.OVERDUE;
 	} else {
-		return "future";
+		return TODO_STATUS.FUTURE;
 	}
 };
 
@@ -367,8 +546,8 @@ const getTodayTodos = (todos) => {
 			return !todo.completed;
 		})
 		.filter((todo) => {
-			const status = getTodoStatus(todo, todayDate);
-			return status === "today";
+			const todoStatus = getTodoStatus(todo, todayDate);
+			return todoStatus === TODO_STATUS.TODAY;
 		});
 };
 
@@ -382,26 +561,32 @@ console.log(getTodayTodos(todos));
 
 //////
 // reusable production helper
-const getTodosByStatusSorted = (todos, status) => {
+const getTodosByStatusSorted = (todos, statusFilter) => {
 	return todos
 		.filter((todo) => {
 			const todoStatus = getTodoStatus(todo, todayDate);
-			return !todo.completed && todoStatus === status;
+			return !todo.completed && todoStatus === statusFilter;
 		})
 		.sort((todoA, todoB) => {
+			const priorityA = todoA.priority;
+			const priorityB = todoB.priority;
+			const priority = PRIORITY_ORDER[priorityA] - PRIORITY_ORDER[priorityB];
+			if (priority !== 0) {
+				return priority;
+			}
 			const dateA = normalizeToDay(todoA.dueDate).getTime();
 			const dateB = normalizeToDay(todoB.dueDate).getTime();
 			return dateA - dateB;
 		});
 };
-console.log(getTodosByStatusSorted(todos, "future"));
+console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
 
 ////////////
-console.log(getTodosByStatusSorted(todos, "future"));
+console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
 const getOverdueTodos = (todos) => {
 	return todos.filter((todo) => {
-		const status = getTodoStatus(todo, todayDate);
-		return !todo.completed && status === "overdue";
+		const todoStatus = getTodoStatus(todo, todayDate);
+		return !todo.completed && todoStatus === TODO_STATUS.OVERDUE;
 	});
 };
 
@@ -409,7 +594,7 @@ console.log(getOverdueTodos(todos));
 
 ///////////////
 const getOverdueTodosSorted = (todos) => {
-	const overdueTodos = getTodosByStatusSorted(todos, status.OVERDUE);
+	const overdueTodos = getTodosByStatusSorted(todos, TODO_STATUS.OVERDUE);
 	return overdueTodos;
 };
 
@@ -417,7 +602,7 @@ console.log(getOverdueTodosSorted(todos));
 
 /////////////
 const getFutureTodosSorted = (todos) => {
-	const futureTodos = getTodosByStatusSorted(todos, status.FUTURE);
+	const futureTodos = getTodosByStatusSorted(todos, TODO_STATUS.FUTURE);
 	return futureTodos;
 };
 
@@ -425,11 +610,8 @@ console.log(getFutureTodosSorted(todos));
 
 ///////
 const getTodayTodosSorted = (todos) => {
-	const todayTodosSorted = getTodosByStatusSorted(todos, status.TODAY);
+	const todayTodosSorted = getTodosByStatusSorted(todos, TODO_STATUS.TODAY);
 	return todayTodosSorted;
 };
 
 console.log(getTodayTodosSorted(todos));
-
-//////
-// reusable production helper
