@@ -561,11 +561,13 @@ console.log(getTodayTodos(todos));
 
 //////
 // reusable production helper
-const getTodosByStatusSorted = (todos, statusFilter) => {
+const getTodosByStatusSorted = (todos, statusFilter, todayDate) => {
 	return todos
+		.map((todo) => {
+			return { ...todo, status: getTodoStatus(todo, todayDate),priorityOrder: };
+		})
 		.filter((todo) => {
-			const todoStatus = getTodoStatus(todo, todayDate);
-			return !todo.completed && todoStatus === statusFilter;
+			return !todo.completed && todo.status === statusFilter;
 		})
 		.sort((todoA, todoB) => {
 			const priorityA = todoA.priority;
@@ -579,7 +581,7 @@ const getTodosByStatusSorted = (todos, statusFilter) => {
 			return dateA - dateB;
 		});
 };
-console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
+console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
 
 ////////////
 console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
