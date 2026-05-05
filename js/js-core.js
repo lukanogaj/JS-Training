@@ -443,7 +443,7 @@ const todos = [
 		title: "Morning workout",
 		completed: false,
 		dueDate: "2026-04-21T07:00:00",
-		priority: "high",
+		priority: "urgent",
 	},
 	{
 		id: 2,
@@ -561,24 +561,26 @@ console.log(getTodayTodos(todos));
 
 //////
 // reusable production helper
-const getTodosByStatusSorted = (todos, statusFilter, todayDate) => {
+const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
 	return todos
 		.map((todo) => {
-			return { ...todo, status: getTodoStatus(todo, todayDate),priorityOrder: };
+			return {
+				...todo,
+				status: getTodoStatus(todo, todayDate),
+				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
+				dayTime: normalizeToDay(todo.dueDate).getTime(),
+			};
 		})
 		.filter((todo) => {
-			return !todo.completed && todo.status === statusFilter;
+			return !todo.completed && todo.status === targetStatus;
 		})
 		.sort((todoA, todoB) => {
-			const priorityA = todoA.priority;
-			const priorityB = todoB.priority;
-			const priority = PRIORITY_ORDER[priorityA] - PRIORITY_ORDER[priorityB];
-			if (priority !== 0) {
-				return priority;
+			const priorityResult = todoA.priorityOrder - todoB.priorityOrder;
+			if (priorityResult !== 0) {
+				return priorityResult;
 			}
-			const dateA = normalizeToDay(todoA.dueDate).getTime();
-			const dateB = normalizeToDay(todoB.dueDate).getTime();
-			return dateA - dateB;
+
+			return todoA.dayTime - todoB.dayTime;
 		});
 };
 console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
