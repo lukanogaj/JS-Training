@@ -536,18 +536,22 @@ const getTodoStatus = (todo, todayDate) => {
 	}
 };
 
-console.log(getTodoStatus(todos[2], todayDate));
+// console.log(getTodoStatus(todos[2], todayDate));
 
 ////////////
 
-const getTodayTodos = (todos) => {
+const getTodayTodos = (todos, todayDate) => {
 	return todos
-		.filter((todo) => {
-			return !todo.completed;
+		.map((todo) => {
+			return {
+				...todo,
+				status: getTodoStatus(todo, todayDate),
+				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
+				dayTime: normalizeToDay(todo.dueDate).getTime(),
+			};
 		})
 		.filter((todo) => {
-			const todoStatus = getTodoStatus(todo, todayDate);
-			return todoStatus === TODO_STATUS.TODAY;
+			return todo.status === TODO_STATUS.TODAY;
 		});
 };
 
@@ -555,9 +559,6 @@ console.log(getTodayTodos(todos));
 
 //////////////////////
 // 22.04.2026 Wednesday
-
-// learning version
-// first approach before abstraction
 
 //////
 // reusable production helper
@@ -583,10 +584,10 @@ const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
 			return todoA.dayTime - todoB.dayTime;
 		});
 };
-console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
+// console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
 
 ////////////
-console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE));
+console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
 const getOverdueTodos = (todos) => {
 	return todos.filter((todo) => {
 		const todoStatus = getTodoStatus(todo, todayDate);
@@ -619,3 +620,42 @@ const getTodayTodosSorted = (todos) => {
 };
 
 console.log(getTodayTodosSorted(todos));
+
+/////////////////
+const getDashboardDataCounts = (todos, todayDate) => {
+	return todos
+		.map((todo) => {
+			return {
+				...todo,
+				status: getTodoStatus(todo, todayDate),
+				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
+				dayTime: normalizeToDay(todo.dueDate).getTime(),
+			};
+		})
+		.reduce(
+			(acc, todo) => {
+				if (todo.completed) {
+					acc.completed += 1;
+				} else {
+					acc.active += 1;
+
+					if (todo.status === TODO_STATUS.TODAY) {
+						acc.today += 1;
+					}
+
+					if (todo.status === TODO_STATUS.OVERDUE) {
+						acc.overdue += 1;
+					}
+
+					if (todo.status === TODO_STATUS.FUTURE) {
+						acc.future += 1;
+					}
+				}
+
+				return acc;
+			},
+			{ today: 0, overdue: 0, future: 0, completed: 0, active: 0 },
+		);
+};
+
+console.log(getDashboardDataCounts(todos, todayDate));
