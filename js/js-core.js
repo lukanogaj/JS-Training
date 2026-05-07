@@ -515,6 +515,8 @@ const PRIORITY_ORDER = {
 // 21.04.2026 Tuesday
 
 // Set date for begin of the day
+
+/////////////////////
 const normalizeToDay = (dateInput) => {
 	const date = new Date(dateInput);
 	date.setHours(0, 0, 0, 0);
@@ -536,26 +538,29 @@ const getTodoStatus = (todo, todayDate) => {
 	}
 };
 
+/// Function to prepare data from todo other functions
+
+const prepareTodo = (todo, todayDate) => {
+	return {
+		...todo,
+		status: getTodoStatus(todo, todayDate),
+		priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
+		dayTime: normalizeToDay(todo.dueDate).getTime(),
+	};
+};
 // console.log(getTodoStatus(todos[2], todayDate));
 
 ////////////
 
 const getTodayTodos = (todos, todayDate) => {
 	return todos
-		.map((todo) => {
-			return {
-				...todo,
-				status: getTodoStatus(todo, todayDate),
-				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
-				dayTime: normalizeToDay(todo.dueDate).getTime(),
-			};
-		})
+		.map((todo) => prepareTodo(todo, todayDate))
 		.filter((todo) => {
-			return todo.status === TODO_STATUS.TODAY;
+			return !todo.completed && todo.status === TODO_STATUS.TODAY;
 		});
 };
 
-console.log(getTodayTodos(todos));
+console.log(getTodayTodos(todos, todayDate));
 
 //////////////////////
 // 22.04.2026 Wednesday
@@ -564,14 +569,7 @@ console.log(getTodayTodos(todos));
 // reusable production helper
 const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
 	return todos
-		.map((todo) => {
-			return {
-				...todo,
-				status: getTodoStatus(todo, todayDate),
-				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
-				dayTime: normalizeToDay(todo.dueDate).getTime(),
-			};
-		})
+		.map((todo) => prepareTodo(todo, todayDate))
 		.filter((todo) => {
 			return !todo.completed && todo.status === targetStatus;
 		})
@@ -584,54 +582,60 @@ const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
 			return todoA.dayTime - todoB.dayTime;
 		});
 };
-// console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
+console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
 
 ////////////
-console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
-const getOverdueTodos = (todos) => {
-	return todos.filter((todo) => {
-		const todoStatus = getTodoStatus(todo, todayDate);
-		return !todo.completed && todoStatus === TODO_STATUS.OVERDUE;
-	});
+// console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
+const getOverdueTodos = (todos, todayDate) => {
+	return todos
+		.map((todo) => prepareTodo(todo, todayDate))
+		.filter((todo) => {
+			return !todo.completed && todo.status === TODO_STATUS.OVERDUE;
+		});
 };
 
-console.log(getOverdueTodos(todos));
+console.log(getOverdueTodos(todos, todayDate));
 
 ///////////////
-const getOverdueTodosSorted = (todos) => {
-	const overdueTodos = getTodosByStatusSorted(todos, TODO_STATUS.OVERDUE);
+const getOverdueTodosSorted = (todos, todayDate) => {
+	const overdueTodos = getTodosByStatusSorted(
+		todos,
+		TODO_STATUS.OVERDUE,
+		todayDate,
+	);
 	return overdueTodos;
 };
 
-console.log(getOverdueTodosSorted(todos));
+console.log(getOverdueTodosSorted(todos, todayDate));
 
 /////////////
-const getFutureTodosSorted = (todos) => {
-	const futureTodos = getTodosByStatusSorted(todos, TODO_STATUS.FUTURE);
+const getFutureTodosSorted = (todos, todayDate) => {
+	const futureTodos = getTodosByStatusSorted(
+		todos,
+		TODO_STATUS.FUTURE,
+		todayDate,
+	);
 	return futureTodos;
 };
 
-console.log(getFutureTodosSorted(todos));
+console.log(getFutureTodosSorted(todos, todayDate));
 
 ///////
-const getTodayTodosSorted = (todos) => {
-	const todayTodosSorted = getTodosByStatusSorted(todos, TODO_STATUS.TODAY);
+const getTodayTodosSorted = (todos, todayDate) => {
+	const todayTodosSorted = getTodosByStatusSorted(
+		todos,
+		TODO_STATUS.TODAY,
+		todayDate,
+	);
 	return todayTodosSorted;
 };
 
-console.log(getTodayTodosSorted(todos));
+console.log(getTodayTodosSorted(todos, todayDate));
 
 /////////////////
 const getDashboardDataCounts = (todos, todayDate) => {
 	return todos
-		.map((todo) => {
-			return {
-				...todo,
-				status: getTodoStatus(todo, todayDate),
-				priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
-				dayTime: normalizeToDay(todo.dueDate).getTime(),
-			};
-		})
+		.map((todo) => prepareTodo(todo, todayDate))
 		.reduce(
 			(acc, todo) => {
 				if (todo.completed) {
@@ -639,17 +643,7 @@ const getDashboardDataCounts = (todos, todayDate) => {
 				} else {
 					acc.active += 1;
 
-					if (todo.status === TODO_STATUS.TODAY) {
-						acc.today += 1;
-					}
-
-					if (todo.status === TODO_STATUS.OVERDUE) {
-						acc.overdue += 1;
-					}
-
-					if (todo.status === TODO_STATUS.FUTURE) {
-						acc.future += 1;
-					}
+					acc[todo.status] += 1;
 				}
 
 				return acc;
