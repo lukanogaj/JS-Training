@@ -560,7 +560,7 @@ const getTodayTodos = (todos, todayDate) => {
 		});
 };
 
-console.log(getTodayTodos(todos, todayDate));
+// console.log(getTodayTodos(todos, todayDate));
 
 //////////////////////
 // 22.04.2026 Wednesday
@@ -594,43 +594,28 @@ const getOverdueTodos = (todos, todayDate) => {
 		});
 };
 
-console.log(getOverdueTodos(todos, todayDate));
+// console.log(getOverdueTodos(todos, todayDate));
 
 ///////////////
 const getOverdueTodosSorted = (todos, todayDate) => {
-	const overdueTodos = getTodosByStatusSorted(
-		todos,
-		TODO_STATUS.OVERDUE,
-		todayDate,
-	);
-	return overdueTodos;
+	return getTodosByStatusSorted(todos, TODO_STATUS.OVERDUE, todayDate);
 };
 
 console.log(getOverdueTodosSorted(todos, todayDate));
 
 /////////////
 const getFutureTodosSorted = (todos, todayDate) => {
-	const futureTodos = getTodosByStatusSorted(
-		todos,
-		TODO_STATUS.FUTURE,
-		todayDate,
-	);
-	return futureTodos;
+	return getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate);
 };
 
-console.log(getFutureTodosSorted(todos, todayDate));
+// console.log(getFutureTodosSorted(todos, todayDate));
 
 ///////
 const getTodayTodosSorted = (todos, todayDate) => {
-	const todayTodosSorted = getTodosByStatusSorted(
-		todos,
-		TODO_STATUS.TODAY,
-		todayDate,
-	);
-	return todayTodosSorted;
+	return getTodosByStatusSorted(todos, TODO_STATUS.TODAY, todayDate);
 };
 
-console.log(getTodayTodosSorted(todos, todayDate));
+// console.log(getTodayTodosSorted(todos, todayDate));
 
 /////////////////
 const getDashboardDataCounts = (todos, todayDate) => {
@@ -652,4 +637,4 @@ const getDashboardDataCounts = (todos, todayDate) => {
 		);
 };
 
-console.log(getDashboardDataCounts(todos, todayDate));
+// console.log(getDashboardDataCounts(todos, todayDate));
