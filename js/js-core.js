@@ -437,6 +437,11 @@
 
 /////////////////
 
+import { normalizeToDay } from "./todos/helpers/normalizeToDay.js";
+import { TODO_STATUS } from "./todos/constants/todoStatus.js";
+import { prepareTodo } from "./todos/helpers/prepareTodo.js";
+import { getActiveTodos } from "./todos/helpers/getActiveTodos.js";
+
 const todos = [
 	{
 		id: 1,
@@ -496,61 +501,10 @@ const todos = [
 	},
 ];
 
-///
-//TODO STATUS
-const TODO_STATUS = {
-	TODAY: "today",
-	OVERDUE: "overdue",
-	FUTURE: "future",
-};
-
-/// TODO PRIORITY
-const PRIORITY_ORDER = {
-	high: 1,
-	medium: 2,
-	low: 3,
-};
-
-///m
-// 21.04.2026 Tuesday
-
 // Set date for begin of the day
 
 /////////////////////
-const normalizeToDay = (dateInput) => {
-	const date = new Date(dateInput);
-	date.setHours(0, 0, 0, 0);
-	return date;
-};
-
-// normalizeToDay();
 const todayDate = new Date("2026-04-21T09:00:00");
-
-const getTodoStatus = (todo, todayDate) => {
-	const today = normalizeToDay(todayDate).getTime();
-	const date = normalizeToDay(todo.dueDate).getTime();
-	if (today === date) {
-		return TODO_STATUS.TODAY;
-	} else if (date < today) {
-		return TODO_STATUS.OVERDUE;
-	} else {
-		return TODO_STATUS.FUTURE;
-	}
-};
-
-/// Function to prepare data from todo other functions
-
-const prepareTodo = (todo, todayDate) => {
-	return {
-		...todo,
-		status: getTodoStatus(todo, todayDate),
-		priorityOrder: PRIORITY_ORDER[todo.priority] || 3,
-		dayTime: normalizeToDay(todo.dueDate).getTime(),
-	};
-};
-// console.log(getTodoStatus(todos[2], todayDate));
-
-////////////
 
 const getTodayTodos = (todos, todayDate) => {
 	return todos
@@ -568,10 +522,7 @@ const getTodayTodos = (todos, todayDate) => {
 //////
 // reusable production helper
 const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
-	return todos
-		.filter((todo) => {
-			return !todo.completed;
-		})
+	return getActiveTodos(todos)
 		.map((todo) => prepareTodo(todo, todayDate))
 		.filter((todo) => {
 			return todo.status === targetStatus;
