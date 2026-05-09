@@ -569,9 +569,12 @@ const getTodayTodos = (todos, todayDate) => {
 // reusable production helper
 const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
 	return todos
+		.filter((todo) => {
+			return !todo.completed;
+		})
 		.map((todo) => prepareTodo(todo, todayDate))
 		.filter((todo) => {
-			return !todo.completed && todo.status === targetStatus;
+			return todo.status === targetStatus;
 		})
 		.sort((todoA, todoB) => {
 			const priorityResult = todoA.priorityOrder - todoB.priorityOrder;
