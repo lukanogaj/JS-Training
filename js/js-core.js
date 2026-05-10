@@ -501,6 +501,13 @@ const todos = [
 		dueDate: "2026-04-23T14:00:00",
 		priority: "medium",
 	},
+	{
+		id: 9,
+		title: "Refactor code",
+		completed: true,
+		dueDate: "2026-07-23T14:00:00",
+		priority: "high",
+	},
 ];
 
 // Set date for begin of the day
