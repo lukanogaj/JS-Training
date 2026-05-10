@@ -441,6 +441,8 @@ import { normalizeToDay } from "./todos/helpers/normalizeToDay.js";
 import { TODO_STATUS } from "./todos/constants/todoStatus.js";
 import { prepareTodo } from "./todos/helpers/prepareTodo.js";
 import { getActiveTodos } from "./todos/helpers/getActiveTodos.js";
+import { filterTodosByStatus } from "./todos/helpers/filterTodosByStatus.js";
+import { sortTodosByPriorityThenDate } from "./todos/helpers/sortTodosByPriorityThenDate.js";
 
 const todos = [
 	{
@@ -521,22 +523,19 @@ const getTodayTodos = (todos, todayDate) => {
 
 //////
 // reusable production helper
-const getTodosByStatusSorted = (todos, targetStatus, todayDate) => {
-	return getActiveTodos(todos)
-		.map((todo) => prepareTodo(todo, todayDate))
-		.filter((todo) => {
-			return todo.status === targetStatus;
-		})
-		.sort((todoA, todoB) => {
-			const priorityResult = todoA.priorityOrder - todoB.priorityOrder;
-			if (priorityResult !== 0) {
-				return priorityResult;
-			}
+const selectSortedActiveTodosByStatus = (todos, targetStatus, todayDate) => {
+	const activeTodos = getActiveTodos(todos);
+	const preparedTodos = activeTodos.map((todo) => {
+		return prepareTodo(todo, todayDate);
+	});
+	const filteredTodos = filterTodosByStatus(preparedTodos, targetStatus);
 
-			return todoA.dayTime - todoB.dayTime;
-		});
+	const sortedTodos = sortTodosByPriorityThenDate(filteredTodos);
+	return sortedTodos;
 };
-console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
+console.log(
+	selectSortedActiveTodosByStatus(todos, TODO_STATUS.FUTURE, todayDate),
+);
 
 ////////////
 // console.log(getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate));
@@ -552,21 +551,21 @@ const getOverdueTodos = (todos, todayDate) => {
 
 ///////////////
 const getOverdueTodosSorted = (todos, todayDate) => {
-	return getTodosByStatusSorted(todos, TODO_STATUS.OVERDUE, todayDate);
+	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.OVERDUE, todayDate);
 };
 
 console.log(getOverdueTodosSorted(todos, todayDate));
 
 /////////////
 const getFutureTodosSorted = (todos, todayDate) => {
-	return getTodosByStatusSorted(todos, TODO_STATUS.FUTURE, todayDate);
+	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.FUTURE, todayDate);
 };
 
 // console.log(getFutureTodosSorted(todos, todayDate));
 
 ///////
 const getTodayTodosSorted = (todos, todayDate) => {
-	return getTodosByStatusSorted(todos, TODO_STATUS.TODAY, todayDate);
+	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.TODAY, todayDate);
 };
 
 // console.log(getTodayTodosSorted(todos, todayDate));
