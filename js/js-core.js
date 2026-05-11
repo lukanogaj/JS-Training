@@ -438,12 +438,11 @@
 /////////////////
 
 // import { normalizeToDay } from "./todos/helpers/normalizeToDay.js";
-import { TODO_STATUS } from "./todos/constants/todoStatus.js";
-import { prepareTodoList } from "./todos/helpers/prepareTodoList.js";
-import { getActiveTodos } from "./todos/helpers/getActiveTodos.js";
-import { filterTodosByStatus } from "./todos/helpers/filterTodosByStatus.js";
-import { sortTodosByPriorityThenDate } from "./todos/helpers/sortTodosByPriorityThenDate.js";
-import { selectSortedActiveTodosByStatus } from "./todos/helpers/selectSortedActiveTodosByStatus.js";
+import { getTodayTodosSorted } from "./todos/selectors/getTodayTodosSorted.js";
+import { getOverdueTodosSorted } from "./todos/selectors/getOverdueTodosSorted.js";
+import { getFutureTodosSorted } from "./todos/selectors/getFutureTodosSorted.js";
+import { getDashboardDataCounts } from "./todos/selectors/getDashboardDataCounts.js";
+
 const todos = [
 	{
 		id: 1,
@@ -510,75 +509,9 @@ const todos = [
 	},
 ];
 
-// Set date for begin of the day
-
-/////////////////////
 const todayDate = new Date("2026-04-21T09:00:00");
 
-const getTodayTodos = (todos, todayDate) => {
-	const preparedTodos = prepareTodoList(todos, todayDate).filter((todo) => {
-		return !todo.completed && todo.status === TODO_STATUS.TODAY;
-	});
-	return preparedTodos;
-};
-
-// console.log(getTodayTodos(todos, todayDate));
-
-////////////
-const getOverdueTodos = (todos, todayDate) => {
-	const preparedTodos = prepareTodoList(todos, todayDate).filter((todo) => {
-		return !todo.completed && todo.status === TODO_STATUS.OVERDUE;
-	});
-	return preparedTodos;
-};
-
-// console.log(getOverdueTodos(todos, todayDate));
-
-///////////////
-const getOverdueTodosSorted = (todos, todayDate) => {
-	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.OVERDUE, todayDate);
-};
-
-console.log(getOverdueTodosSorted(todos, todayDate));
-
-/////////////
-const getFutureTodosSorted = (todos, todayDate) => {
-	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.FUTURE, todayDate);
-};
-
-console.log(getFutureTodosSorted(todos, todayDate));
-
-///////
-const getTodayTodosSorted = (todos, todayDate) => {
-	return selectSortedActiveTodosByStatus(todos, TODO_STATUS.TODAY, todayDate);
-};
-
-console.log(getTodayTodosSorted(todos, todayDate));
-
-/////////////////
-const getDashboardDataCounts = (todos, todayDate) => {
-	const dashboardDataCounts = prepareTodoList(todos, todayDate).reduce(
-		(acc, todo) => {
-			if (todo.completed) {
-				acc.completed += 1;
-			} else {
-				acc.active += 1;
-
-				acc[todo.status] += 1;
-			}
-
-			return acc;
-		},
-		{ today: 0, overdue: 0, future: 0, completed: 0, active: 0 },
-	);
-	return dashboardDataCounts;
-};
-
-// console.log(getDashboardDataCounts(todos, todayDate));
-
-console.log("FUTURE:", getFutureTodosSorted(todos, todayDate));
 console.log("TODAY:", getTodayTodosSorted(todos, todayDate));
 console.log("OVERDUE:", getOverdueTodosSorted(todos, todayDate));
-
-
-selector pipeline cleanup
+console.log("FUTURE:", getFutureTodosSorted(todos, todayDate));
+console.log("COUNTS:", getDashboardDataCounts(todos, todayDate));
