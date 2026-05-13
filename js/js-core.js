@@ -438,10 +438,10 @@
 /////////////////
 
 // import { normalizeToDay } from "./todos/helpers/normalizeToDay.js";
-import { getTodayTodosSorted } from "./todos/selectors/getTodayTodosSorted.js";
-import { getOverdueTodosSorted } from "./todos/selectors/getOverdueTodosSorted.js";
-import { getFutureTodosSorted } from "./todos/selectors/getFutureTodosSorted.js";
-import { getDashboardDataCounts } from "./todos/selectors/getDashboardDataCounts.js";
+// import { getTodayTodosSorted } from "./todos/selectors/getTodayTodosSorted.js";
+// import { getOverdueTodosSorted } from "./todos/selectors/getOverdueTodosSorted.js";
+// import { getFutureTodosSorted } from "./todos/selectors/getFutureTodosSorted.js";
+// import { getDashboardDataCounts } from "./todos/selectors/getDashboardDataCounts.js";
 
 const todos = [
 	{
@@ -509,9 +509,7 @@ const todos = [
 	},
 ];
 
-const todayDate = new Date("2026-04-21T09:00:00");
-
-console.log("TODAY:", getTodayTodosSorted(todos, todayDate));
-console.log("OVERDUE:", getOverdueTodosSorted(todos, todayDate));
-console.log("FUTURE:", getFutureTodosSorted(todos, todayDate));
-console.log("COUNTS:", getDashboardDataCounts(todos, todayDate));
+// console.log("TODAY:", getTodayTodosSorted(todos, todayDate));
+// console.log("OVERDUE:", getOverdueTodosSorted(todos, todayDate));
+// console.log("FUTURE:", getFutureTodosSorted(todos, todayDate));
+// console.log("COUNTS:", getDashboardDataCounts(todos, todayDate));
