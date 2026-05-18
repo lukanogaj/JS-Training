@@ -1,6 +1,7 @@
 import TodoItem from "./TodoItem";
 
 const TodoSection = ({ todos, heading }) => {
+	console.log(todos);
 	return (
 		<section className='todo-section'>
 			<h2>{heading}</h2>

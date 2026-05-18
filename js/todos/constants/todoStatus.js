@@ -3,4 +3,5 @@ export const TODO_STATUS = {
 	OVERDUE: "overdue",
 	FUTURE: "future",
 	NO_DATE: "noDate",
+	COMPLETED: "completed",
 };
