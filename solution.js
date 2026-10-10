@@ -1,3 +1,10 @@
+const WILDCARD_ENABLED = true;
+const WILDCARD = "ANY";
+const CACHE_LIMIT = 500;
+
+let cacheData = null;
+let cache = new Map();
+
 function getHeader(data) {
 	let end = data.indexOf("\n");
 
@@ -29,8 +36,14 @@ function getHeader(data) {
 }
 
 function validateSearch(search, indexes) {
-	for (const key of Object.keys(search)) {
-		if (!indexes.has(key)) {
+	const keys = Object.keys(search);
+
+	if (keys.length !== indexes.size - 1) {
+		throw new Error("Key mismatch");
+	}
+
+	for (const key of keys) {
+		if (key === "value" || !indexes.has(key)) {
 			throw new Error("Key mismatch");
 		}
 	}
@@ -42,7 +55,38 @@ function prepareSearch(search, indexes) {
 	return Object.entries(search).map(([key, value]) => ({
 		index: indexes.get(key),
 		value: String(value),
+		slot: -1,
 	}));
+}
+
+function buildNeeded(valueIndex, searches) {
+	const indexes = new Set([valueIndex]);
+
+	for (const conditions of searches) {
+		for (const condition of conditions) {
+			indexes.add(condition.index);
+		}
+	}
+
+	return [...indexes]
+		.sort((a, b) => a - b)
+		.map((index, slot) => ({ index, slot }));
+}
+
+function assignSlots(needed, searches) {
+	const slots = new Map();
+
+	for (const item of needed) {
+		slots.set(item.index, item.slot);
+	}
+
+	for (const conditions of searches) {
+		for (const condition of conditions) {
+			condition.slot = slots.get(condition.index);
+		}
+	}
+
+	return slots;
 }
 
 function readNeededFields(data, start, end, needed) {
@@ -81,48 +125,31 @@ function readNeededFields(data, start, end, needed) {
 	return fields;
 }
 
-function buildNeeded(valueIndex, searches) {
-	const indexes = new Set([valueIndex]);
-
-	for (const conditions of searches) {
-		for (const condition of conditions) {
-			indexes.add(condition.index);
-		}
-	}
-
-	return [...indexes]
-		.sort((a, b) => a - b)
-		.map((index, slot) => ({ index, slot }));
-}
-
-function buildSlots(needed) {
-	const slots = new Map();
-
-	for (const item of needed) {
-		slots.set(item.index, item.slot);
-	}
-
-	return slots;
-}
-
-function matches(fields, conditions, slots) {
+function matches(fields, conditions) {
 	for (const condition of conditions) {
-		const actual = fields[slots.get(condition.index)];
+		const actual = fields[condition.slot];
 
-		if (actual !== "ANY" && actual !== condition.value) {
-			return false;
+		if (actual === condition.value) {
+			continue;
 		}
+
+		if (WILDCARD_ENABLED && actual === WILDCARD) {
+			continue;
+		}
+
+		return false;
 	}
 
 	return true;
 }
 
-function task1(search, data) {
+function findFirst(search, data) {
 	const { indexes, headerEnd, valueIndex } = getHeader(data);
 
 	const conditions = prepareSearch(search, indexes);
 	const needed = buildNeeded(valueIndex, [conditions]);
-	const slots = buildSlots(needed);
+	const slots = assignSlots(needed, [conditions]);
+	const valueSlot = slots.get(valueIndex);
 
 	let position = headerEnd + 1;
 
@@ -136,8 +163,8 @@ function task1(search, data) {
 		if (end > position) {
 			const fields = readNeededFields(data, position, end, needed);
 
-			if (matches(fields, conditions, slots)) {
-				return fields[slots.get(valueIndex)];
+			if (matches(fields, conditions)) {
+				return fields[valueSlot];
 			}
 		}
 
@@ -145,6 +172,36 @@ function task1(search, data) {
 	}
 
 	return "-1";
+}
+
+function cacheKey(search) {
+	return Object.keys(search)
+		.sort()
+		.map((k) => k + "=" + String(search[k]))
+		.join("\u0001");
+}
+
+function task1(search, data) {
+	if (data !== cacheData) {
+		cacheData = data;
+		cache = new Map();
+	}
+
+	const key = cacheKey(search);
+
+	if (cache.has(key)) {
+		return cache.get(key);
+	}
+
+	const result = findFirst(search, data);
+
+	if (cache.size >= CACHE_LIMIT) {
+		cache.delete(cache.keys().next().value);
+	}
+
+	cache.set(key, result);
+
+	return result;
 }
 
 function task2(keys, data) {
@@ -157,7 +214,8 @@ function task2(keys, data) {
 	const searches = keys.map((search) => prepareSearch(search, indexes));
 
 	const needed = buildNeeded(valueIndex, searches);
-	const slots = buildSlots(needed);
+	const slots = assignSlots(needed, searches);
+	const valueSlot = slots.get(valueIndex);
 
 	const found = new Array(searches.length);
 	let remaining = searches.length;
@@ -178,8 +236,8 @@ function task2(keys, data) {
 					continue;
 				}
 
-				if (matches(fields, searches[i], slots)) {
-					found[i] = Number(fields[slots.get(valueIndex)]);
+				if (matches(fields, searches[i])) {
+					found[i] = Number(fields[valueSlot]);
 					remaining--;
 				}
 			}
