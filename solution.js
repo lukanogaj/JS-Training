@@ -1,272 +1,126 @@
-const WILDCARD_ENABLED = true;
-const WILDCARD = "ANY";
-const CACHE_LIMIT = 500;
+const crypto = require("crypto");
 
-let cacheData = null;
-let cache = new Map();
+// Prosta pamięć podręczna (memoizacja) dla sparsowanych danych
+const cache = new Map();
 
-function getHeader(data) {
-	let end = data.indexOf("\n");
+function parseCsvData(dataStr) {
+	if (cache.has(dataStr)) {
+		return cache.get(dataStr);
+	}
+	const lines = dataStr.trim().split("\n");
+	if (lines.length === 0) return { header: [], rows: [] };
 
-	if (end === -1) {
-		end = data.length;
+	const header = lines[0].split(",");
+	const rows = new Array(lines.length - 1);
+
+	for (let i = 1; i < lines.length; i++) {
+		if (lines[i].trim()) {
+			rows[i - 1] = lines[i].split(",");
+		}
 	}
 
-	const header = data
-		.slice(0, end)
-		.replace(/\r$/, "")
-		.replace(/^\uFEFF/, "")
-		.split(",");
+	const result = { header, rows };
+	cache.set(dataStr, result);
+	return result;
+}
 
-	const indexes = new Map();
+function validateKeys(searchObj, header) {
+	const searchKeys = Object.keys(searchObj).sort();
+	const headerKeys = header.filter((h) => h !== "value").sort();
 
+	if (
+		searchKeys.length !== headerKeys.length ||
+		!searchKeys.every((val, index) => val === headerKeys[index])
+	) {
+		throw new Error("Key mismatch");
+	}
+}
+
+function task1(searchDict, dataStr) {
+	const { header, rows } = parseCsvData(dataStr);
+
+	validateKeys(searchDict, header);
+
+	const colIndices = {};
 	for (let i = 0; i < header.length; i++) {
-		indexes.set(header[i], i);
+		colIndices[header[i]] = i;
 	}
+	const valueIdx = colIndices["value"];
+	const searchEntries = Object.entries(searchDict);
 
-	if (!indexes.has("value")) {
-		throw new Error("Key mismatch");
-	}
+	for (let i = 0; i < rows.length; i++) {
+		const row = rows[i];
+		let match = true;
 
-	return {
-		indexes,
-		headerEnd: end,
-		valueIndex: indexes.get("value"),
-	};
-}
-
-function validateSearch(search, indexes) {
-	const keys = Object.keys(search);
-
-	if (keys.length !== indexes.size - 1) {
-		throw new Error("Key mismatch");
-	}
-
-	for (const key of keys) {
-		if (key === "value" || !indexes.has(key)) {
-			throw new Error("Key mismatch");
-		}
-	}
-}
-
-function prepareSearch(search, indexes) {
-	validateSearch(search, indexes);
-
-	return Object.entries(search).map(([key, value]) => ({
-		index: indexes.get(key),
-		value: String(value),
-		slot: -1,
-	}));
-}
-
-function buildNeeded(valueIndex, searches) {
-	const indexes = new Set([valueIndex]);
-
-	for (const conditions of searches) {
-		for (const condition of conditions) {
-			indexes.add(condition.index);
-		}
-	}
-
-	return [...indexes]
-		.sort((a, b) => a - b)
-		.map((index, slot) => ({ index, slot }));
-}
-
-function assignSlots(needed, searches) {
-	const slots = new Map();
-
-	for (const item of needed) {
-		slots.set(item.index, item.slot);
-	}
-
-	for (const conditions of searches) {
-		for (const condition of conditions) {
-			condition.slot = slots.get(condition.index);
-		}
-	}
-
-	return slots;
-}
-
-function readNeededFields(data, start, end, needed) {
-	const fields = new Array(needed.length);
-
-	let column = 0;
-	let fieldStart = start;
-	let neededPosition = 0;
-
-	for (let i = start; i <= end; i++) {
-		if (i === end || data.charCodeAt(i) === 44) {
-			while (
-				neededPosition < needed.length &&
-				needed[neededPosition].index === column
-			) {
-				let fieldEnd = i;
-
-				if (fieldEnd > fieldStart && data.charCodeAt(fieldEnd - 1) === 13) {
-					fieldEnd--;
-				}
-
-				fields[needed[neededPosition].slot] = data.slice(fieldStart, fieldEnd);
-
-				neededPosition++;
-			}
-
-			if (neededPosition === needed.length) {
+		for (let j = 0; j < searchEntries.length; j++) {
+			const [k, v] = searchEntries[j];
+			if (row[colIndices[k]] !== String(v)) {
+				match = false;
 				break;
 			}
-
-			column++;
-			fieldStart = i + 1;
-		}
-	}
-
-	return fields;
-}
-
-function matches(fields, conditions) {
-	for (const condition of conditions) {
-		const actual = fields[condition.slot];
-
-		if (actual === condition.value) {
-			continue;
 		}
 
-		if (WILDCARD_ENABLED && actual === WILDCARD) {
-			continue;
+		if (match) {
+			return row[valueIdx];
 		}
-
-		return false;
-	}
-
-	return true;
-}
-
-function findFirst(search, data) {
-	const { indexes, headerEnd, valueIndex } = getHeader(data);
-
-	const conditions = prepareSearch(search, indexes);
-	const needed = buildNeeded(valueIndex, [conditions]);
-	const slots = assignSlots(needed, [conditions]);
-	const valueSlot = slots.get(valueIndex);
-
-	let position = headerEnd + 1;
-
-	while (position < data.length) {
-		let end = data.indexOf("\n", position);
-
-		if (end === -1) {
-			end = data.length;
-		}
-
-		if (end > position) {
-			const fields = readNeededFields(data, position, end, needed);
-
-			if (matches(fields, conditions)) {
-				return fields[valueSlot];
-			}
-		}
-
-		position = end + 1;
 	}
 
 	return "-1";
 }
 
-function cacheKey(search) {
-	return Object.keys(search)
-		.sort()
-		.map((k) => k + "=" + String(search[k]))
-		.join("\u0001");
-}
+function task2(searchList, dataStr) {
+	const { header, rows } = parseCsvData(dataStr);
 
-function task1(search, data) {
-	if (data !== cacheData) {
-		cacheData = data;
-		cache = new Map();
+	if (searchList.length > 0) {
+		validateKeys(searchList[0], header);
 	}
 
-	const key = cacheKey(search);
-
-	if (cache.has(key)) {
-		return cache.get(key);
+	const colIndices = {};
+	for (let i = 0; i < header.length; i++) {
+		colIndices[header[i]] = i;
 	}
+	const valueIdx = colIndices["value"];
 
-	const result = findFirst(search, data);
+	let totalWeightedValue = 0;
+	let totalWeight = 0;
 
-	if (cache.size >= CACHE_LIMIT) {
-		cache.delete(cache.keys().next().value);
-	}
+	for (let s = 0; s < searchList.length; s++) {
+		const searchDict = searchList[s];
+		const searchEntries = Object.entries(searchDict);
+		let matchedValStr = null;
 
-	cache.set(key, result);
+		for (let i = 0; i < rows.length; i++) {
+			const row = rows[i];
+			let match = true;
 
-	return result;
-}
-
-function task2(keys, data) {
-	const { indexes, headerEnd, valueIndex } = getHeader(data);
-
-	if (keys.length === 0) {
-		return "-1";
-	}
-
-	const searches = keys.map((search) => prepareSearch(search, indexes));
-
-	const needed = buildNeeded(valueIndex, searches);
-	const slots = assignSlots(needed, searches);
-	const valueSlot = slots.get(valueIndex);
-
-	const found = new Array(searches.length);
-	let remaining = searches.length;
-	let position = headerEnd + 1;
-
-	while (position < data.length && remaining > 0) {
-		let end = data.indexOf("\n", position);
-
-		if (end === -1) {
-			end = data.length;
-		}
-
-		if (end > position) {
-			const fields = readNeededFields(data, position, end, needed);
-
-			for (let i = 0; i < searches.length; i++) {
-				if (found[i] !== undefined) {
-					continue;
+			for (let j = 0; j < searchEntries.length; j++) {
+				const [k, v] = searchEntries[j];
+				if (row[colIndices[k]] !== String(v)) {
+					match = false;
+					break;
 				}
+			}
 
-				if (matches(fields, searches[i])) {
-					found[i] = Number(fields[valueSlot]);
-					remaining--;
-				}
+			if (match) {
+				matchedValStr = row[valueIdx];
+				break;
 			}
 		}
 
-		position = end + 1;
-	}
-
-	let weightedSum = 0;
-	let totalWeight = 0;
-
-	for (const value of found) {
-		if (value === undefined) {
-			continue;
+		if (matchedValStr !== null && matchedValStr !== "-1") {
+			const val = parseInt(matchedValStr, 10);
+			const weight = val % 2 !== 0 ? 10 : 20;
+			totalWeightedValue += val * weight;
+			totalWeight += weight;
 		}
-
-		const weight = Math.abs(value % 2) === 1 ? 10 : 20;
-
-		weightedSum += value * weight;
-		totalWeight += weight;
 	}
 
 	if (totalWeight === 0) {
-		return "-1";
+		return "0.0";
 	}
 
-	return (weightedSum / totalWeight).toFixed(1);
+	const weightedAvg = totalWeightedValue / totalWeight;
+	return weightedAvg.toFixed(1);
 }
 
-if (typeof module !== "undefined" && module.exports) {
-	module.exports = { task1, task2 };
-}
+module.exports = { task1, task2 };
