@@ -1,16 +1,17 @@
-const crypto = require("crypto");
+const fs = require("fs");
+const lz4 = require("lz4");
 
-// Prosta pamięć podręczna (memoizacja) dla sparsowanych danych
 const cache = new Map();
 
 function parseCsvData(dataStr) {
 	if (cache.has(dataStr)) {
 		return cache.get(dataStr);
 	}
-	const lines = dataStr.trim().split("\n");
+	const cleanData = dataStr.replace(/\r/g, "");
+	const lines = cleanData.trim().split("\n");
 	if (lines.length === 0) return { header: [], rows: [] };
 
-	const header = lines[0].split(",");
+	const header = lines[0].split(",").map((h) => h.trim());
 	const rows = new Array(lines.length - 1);
 
 	for (let i = 1; i < lines.length; i++) {
@@ -26,7 +27,10 @@ function parseCsvData(dataStr) {
 
 function validateKeys(searchObj, header) {
 	const searchKeys = Object.keys(searchObj).sort();
-	const headerKeys = header.filter((h) => h !== "value").sort();
+	const headerKeys = header
+		.filter((h) => h !== "value")
+		.map((h) => h.trim())
+		.sort();
 
 	if (
 		searchKeys.length !== headerKeys.length ||
@@ -38,7 +42,6 @@ function validateKeys(searchObj, header) {
 
 function task1(searchDict, dataStr) {
 	const { header, rows } = parseCsvData(dataStr);
-
 	validateKeys(searchDict, header);
 
 	const colIndices = {};
@@ -121,6 +124,23 @@ function task2(searchList, dataStr) {
 
 	const weightedAvg = totalWeightedValue / totalWeight;
 	return weightedAvg.toFixed(1);
+}
+
+// Wykonanie bezpośrednie w celu uzyskania wyniku
+try {
+	const input = fs.readFileSync("find_match_average_v2.dat.lz4");
+	const uncompressed = lz4.decode(input);
+	const dataContent = uncompressed.toString("utf8");
+
+	const searchKeysList = [
+		{ a: 862984, b: 29105, c: 605280, d: 678194, e: 302120 },
+		{ a: 20226, b: 781899, c: 186952, d: 506894, e: 325696 },
+	];
+
+	const wynik = task2(searchKeysList, dataContent);
+	console.log("WYNIK KOŃCOWY:", wynik);
+} catch (err) {
+	console.error("BŁĄD:", err.message);
 }
 
 module.exports = { task1, task2 };
